@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" th:href="@{/css/transferApps.css}" />
+</head>
+
+<body>
+<div th:replace="header :: header"> </div>
+<div class="greyAddressLayout">
+    <p><a href="/userHome">Home</a> / </p>
+</div>
+    <div style="text-align: center;">
+        <h2>Welcome [[${userAccount.name}]]!</h2>
+        <p><a href="/userHome/friend/add">Add a friend to your list</a></p>
+        <p><a href="/userHome/bankAccount/add">Link a bank account to your account</a></p>
+        <p><a href="/userHome/withdrawMoney/withdraw">Withdraw some money from a bank account</a></p>
+        <p><a href="/userHome/depositMoney/deposit">Deposit some money to a bank account</a></p>
+        <p><a href="/userHome/transfer">Send some money to a relative</a></p>
+        <p><a href="/userHome/profile">Get account info</a></p>
+    </div>
+    </body>
+    </html>

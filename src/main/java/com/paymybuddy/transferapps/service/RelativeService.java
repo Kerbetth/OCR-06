@@ -25,16 +25,16 @@ public class RelativeService {
     private RelativeEmailRepository relativeEmailRepository;
     @Autowired
     protected UserAccountRepository userAccountRepository;
+    @Autowired
+    private MyAppUserDetailsService myAppUserDetailsService;
+
 
     public boolean addAFriend(RelationEmail relationEmail) {
         if (!userAccountRepository.findByEmail(relationEmail.getRelativeEmail()).isEmpty()) {
-            relationEmail.setEmail(userAccountRepository.findByEmail(
-                    MyAppUserDetailsService.currentUserEmail()
-            )
-                    .get().getEmail());
+            relationEmail.setUserAccount(myAppUserDetailsService.currentUserAccount());
             Optional<RelationEmail> existingRelation =
-                    relativeEmailRepository.findByEmailAndRelativeEmail(
-                            relationEmail.getEmail(),
+                    relativeEmailRepository.findByUserAccountAndRelativeEmail(
+                            myAppUserDetailsService.currentUserAccount(),
                             relationEmail.getRelativeEmail());
             if (existingRelation.isEmpty()) {
                 relativeEmailRepository.save(relationEmail);
@@ -51,10 +51,7 @@ public class RelativeService {
 
     public List<String> getRelatives() {
         List<String> relativeList = new ArrayList<>();
-        for (RelationEmail relative : relativeEmailRepository.findByEmail(userAccountRepository.findByEmail(
-                MyAppUserDetailsService.currentUserEmail()
-        )
-                .get().getEmail())) {
+        for (RelationEmail relative : relativeEmailRepository.findByUserAccount(myAppUserDetailsService.currentUserAccount())) {
             relativeList.add(relative.getRelativeEmail());
         }
         return relativeList;

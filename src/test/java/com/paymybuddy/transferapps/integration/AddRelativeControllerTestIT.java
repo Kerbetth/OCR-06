@@ -1,36 +1,18 @@
 package com.paymybuddy.transferapps.integration;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paymybuddy.transferapps.domain.RelationEmail;
 import com.paymybuddy.transferapps.domain.UserAccount;
-import com.paymybuddy.transferapps.repositories.RelativeEmailRepository;
-import com.paymybuddy.transferapps.repositories.UserAccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.sql.Timestamp;
-import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
 public class AddRelativeControllerTestIT extends AbstractIT{
 
@@ -75,15 +57,15 @@ public class AddRelativeControllerTestIT extends AbstractIT{
         relationEmail.setRelativeEmail("friend@test.com");
         mvc.perform(post("/userHome/friend/adding")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("email",relationEmail.getEmail())
+                //.param("email",relationEmail.getEmail())
                 .param("relativeEmail",relationEmail.getRelativeEmail())
                 .requestAttr("relationEmail", relationEmail)
                 .contentType(MediaType.APPLICATION_XHTML_XML)
         )
         .andExpect(status().isFound())
         .andExpect(view().name("redirect:/userHome"));
-        assertThat(relativeEmailRepository.findByEmail("test@test.com")).hasSize(1);
-        assertThat(relativeEmailRepository.findByEmail("test@test.com").get(0).getRelativeEmail()).isEqualTo("friend@test.com");
+        assertThat(relativeEmailRepository.findByUserAccount(account)).hasSize(1);
+        assertThat(relativeEmailRepository.findByUserAccount(account).get(0).getRelativeEmail()).isEqualTo("friend@test.com");
     }
 
     @Test
@@ -92,28 +74,28 @@ public class AddRelativeControllerTestIT extends AbstractIT{
         relationEmail.setRelativeEmail("friend@test.com");
         mvc.perform(post("/userHome/friend/adding")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("email",relationEmail.getEmail())
+                //.param("email",relationEmail.getEmail())
                 .param("relativeEmail",relationEmail.getRelativeEmail())
                 .requestAttr("relationEmail", relationEmail)
                 .contentType(MediaType.APPLICATION_XHTML_XML)
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
-        assertThat(relativeEmailRepository.findByEmail("test@test.com")).hasSize(1);
+        assertThat(relativeEmailRepository.findByUserAccount(account)).hasSize(1);
 
         relationEmail.setId(85L);
         relationEmail.setRelativeEmail("friend2@test.com");
         mvc.perform(post("/userHome/friend/adding")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("email",relationEmail.getEmail())
+                //.param("email",relationEmail.getEmail())
                 .param("relativeEmail",relationEmail.getRelativeEmail())
                 .requestAttr("relationEmail", relationEmail)
                 .contentType(MediaType.APPLICATION_XHTML_XML)
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
-        assertThat(relativeEmailRepository.findByEmail("test@test.com")).hasSize(2);
-        assertThat(relativeEmailRepository.findByEmailAndRelativeEmail("test@test.com","friend@test.com")).isPresent();
-        assertThat(relativeEmailRepository.findByEmailAndRelativeEmail("test@test.com","friend2@test.com")).isPresent();
+        assertThat(relativeEmailRepository.findByUserAccount(account)).hasSize(2);
+        assertThat(relativeEmailRepository.findByUserAccountAndRelativeEmail(account,"friend@test.com")).isPresent();
+        assertThat(relativeEmailRepository.findByUserAccountAndRelativeEmail(account,"friend2@test.com")).isPresent();
     }
 }

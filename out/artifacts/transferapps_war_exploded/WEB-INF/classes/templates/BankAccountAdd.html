@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add a bank account</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" th:href="@{/css/transferApps.css}"/>
+</head>
+<div th:replace="header :: header">
+</div>
+<div class="greyAddressLayout">
+    <p><a href="/userHome">Home</a> / <a href="/userHome/profile">Profile</a> / <a href="/userHome/bankAccount/add">Add Bank Account</a></p>
+</div>
+<body>
+<div class="container">
+
+    <h2>Add a bank account to your list.</h2>
+    <form name='f' th:object="${bankAccount}" th:action="@{/userHome/bankAccount/adding}" method="post">
+        <table>
+            <tr>
+                <td>Name of your bank account:</td>
+                <td>
+                    <input type="text" id="accountName" placeholder="accountName" class="form-control"
+                           th:field="*{accountName}"/>
+                </td>
+            </tr>
+            <tr>
+                <td>IBAN of your bank account:</td>
+                <td>
+                    <input type="text" id="accountIban" placeholder="accountIban" class="form-control"
+                           th:field="*{accountIban}"/>
+                </td>
+            </tr>
+            <tr class="row">
+                <td>
+                    <input name="submit" type="submit" value="submit"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>
+

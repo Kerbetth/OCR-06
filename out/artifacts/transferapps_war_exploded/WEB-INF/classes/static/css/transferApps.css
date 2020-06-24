@@ -1,0 +1,209 @@
+/*------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------
+
+CONFIGURATION GENERALE
+
+------------------------------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------*/
+
+
+body {
+
+    background-color: white;
+    margin: 0px;
+    color: black;
+}
+
+header {
+    background-image: url("title_icon.png");
+    background-position: top left;
+    background-repeat: no-repeat, no-repeat;
+    word-spacing: 30px;
+    background-color: white;
+    margin: 0px;
+    text-align: right;
+    padding: 20px;
+    font-size: 100%;
+    color: black;
+    font-family: Arial, serif;
+}
+
+
+.greyAddressLayout {
+    background-color: rgb(220,220,220);
+    padding: 10px 30px;
+}
+.container {
+    max-width: 1200px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 93%;
+    margin-bottom: 100px;
+}
+.transactionTable{
+border-color: black;
+}
+
+th{
+    background-color: #00bc50;
+    padding: 20px;
+    margin: 0px;
+    color: white;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+tr{
+    background-color: white;
+    padding: 20px;
+    margin: 0px;
+    color: black;
+    text-align: center;
+    border-collapse: collapse;
+}
+td{
+    padding: 20px;
+    color: black;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+
+.element {
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+
+}
+
+.buttonAdd {
+    background-color: royalblue;
+    font-family: Arial Black, serif;
+    color: white;
+    padding: 20px 25px;
+    font-size: 25px;
+    border-radius: 5px;
+}
+
+.buttonPay {
+    background-color: #00bc50;
+    font-family: Arial Black, serif;
+    color: white;
+    padding: 20px 50px;
+    font-size: 25px;
+    border-radius: 5px;
+}
+
+.buttonPut {
+    background-color: gray;
+    font-family: Arial Black, serif;
+    color: white;
+    padding: 5px 50px;
+    margin: 5px 20px;
+    font-size: 15px;
+}
+
+table {
+    width: 100%;
+    align-content: space-around;
+    border: 2px solid black;
+    margin: 0px;
+    text-align: center;
+    border-collapse: collapse;
+    word-spacing: 3px;
+}
+
+.operation {
+    text-align: center;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    display: flex;
+    background-color: rgb(220,220,220);
+    word-spacing: 30px;
+}
+
+div.pager {
+    text-align: left;
+}
+
+div.pager span {
+    display: inline-block;
+    width: 1.8em;
+    height: 1.8em;
+    line-height: 1.8;
+    text-align: center;
+    cursor: pointer;
+    background: #191919;
+    color: #ccc;
+    margin-right: 0.5em;
+}
+
+div.pager span.active {
+    background: #fff;
+    color:#191919;
+    font-weight:bold;
+    text-align:center;
+}
+
+
+
+a {
+    text-decoration: none;
+    color: rgb(20, 20, 20);
+    outline: none;
+}
+
+a:hover {
+    color: rgb(70, 70, 100);
+}
+
+h1 {
+
+    font-family: Lucida Console, serif;
+    font-size: 230%;
+    color: rgb(250, 230, 200);
+}
+
+h2 {
+    font-size: 180%;
+    color: rgb(40,40,40);
+    font-family: Arial, serif;
+}
+
+
+
+@media screen and (max-width: 1024px) {
+
+    #conteneur {
+        padding: 50px 50px;
+        flex-direction: column;
+
+    }
+
+    footer {
+
+        flex-direction: column;
+
+    }
+
+
+    .element {
+        margin: 0 auto;
+    }
+
+    .elementsocial {
+
+        margin: 0 auto;
+
+    }
+
+    .elementcoordone {
+
+        margin: 0 auto;
+
+    }
+}

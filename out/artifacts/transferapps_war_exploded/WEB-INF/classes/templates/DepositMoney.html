@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Depositing</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" th:href="@{/css/transferApps.css}" />
+</head>
+<div th:replace="header :: header">
+</div>
+<div class="greyAddressLayout">
+    <p><a href="/userHome">Home</a> / <a href="/userHome/profile">Profile</a> / <a href="/userHome/depositMoney/deposit">Deposit Money</a></p>
+</div>
+<body>
+<div class="container">
+
+    <h2>DEPOSIT MONEY.</h2>
+    <div>
+        <form name='f' th:object="${depositMoney}" th:action="@{/userHome/depositMoney/depositing}"method='POST'>
+            <table>
+                <tr>
+                    <td>Select BankAccount:</td>
+                    <td>
+                        <select th:field="*{accountName}">
+                            <option value=""> select a bank Account</option>
+                            <option th:each="bankAccountName : ${bankAccounts}"
+                                    th:value="${bankAccountName.accountName}"
+                                    th:utext="${bankAccountName.accountName}"/>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Enter MoneyAmount:</td>
+                    <td>
+                        <input type="text" class="form-control" th:field="*{amount}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Add a description (optional):</td>
+                    <td>
+                        <input type="text" class="form-control" th:field="*{description}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><input name="submit" type="submit" value="submit"/></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+</body>
+</html>

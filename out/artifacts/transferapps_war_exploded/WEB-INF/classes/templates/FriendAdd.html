@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add a friend</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" th:href="@{/css/transferApps.css}" />
+</head>
+<div th:replace="header :: header">
+</div>
+<div class="greyAddressLayout">
+    <p><a href="/userHome">Home</a> / <a href="/userHome/transfer">Transfer</a> / <a href="/userHome/friend/add">AddFriend</a></p>
+</div>
+<body>
+<div class="container">
+    <h2>Add a friend to your friendlist.</h2>
+    <form name='f' th:object="${relative}" th:action="@{/userHome/friend/adding}" method="post">
+        <table>
+            <tr>
+                <td>Email of your friend:</td>
+                <td>
+                    <input type="text" id="relativeEmail" placeholder="relativeEmail" class="form-control"
+                           th:field="*{relativeEmail}"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input name="submit" type="submit" value="submit"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>
+

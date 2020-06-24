@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add a bank account</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" th:href="@{/css/transferApps.css}" />
+</head>
+<body>
+
+<div style="text-align: center;">
+    <div class="container">
+        <h2>
+            All Transactions
+        </h2>
+    </div>
+    <div style="display: inline-block; position: center;" th:if="${not #lists.isEmpty(transactions)}">
+        <table>
+            <tr style="text-align: center;">
+                <th>Transfer Type</th>
+                <th>Relative</th>
+                <th>Money Amount</th>
+                <th>Tax Amount</th>
+                <th>Description</th>
+                <th>Date</th>
+            </tr>
+            <tr th:each="transaction : ${transactions}">
+                <td th:text="${transaction.sendingOrReceiving}"></td>
+                <td th:text="${transaction.relativeEmail}"></td>
+                <td th:text="${transaction.Amount}"></td>
+                <td th:text="${transaction.perceiveAmountForApp}"></td>
+                <td th:text="${transaction.description}"></td>
+                <td th:text="${transaction.date}"></td>
+            </tr>
+        </table>
+    </div>
+    <h2><a href="/userHome">Back to menu</a></h2>
+</div>
+</body>
+</html>

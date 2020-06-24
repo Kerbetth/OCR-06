@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Transfer</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" th:href="@{/css/transferApps.css}"/>
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="jquery.simplePagination.js"></script>
+</head>
+
+<body>
+<div th:replace="header :: header">
+</div>
+<div class="greyAddressLayout">
+    <p><a href="/userHome">Home</a> / <a href="/SendMoney">Transfer</a></p>
+</div>
+<div class="container" style="margin-bottom: 0px">
+    <div class="element">
+        <h2>Send Money</h2>
+        <a href="/userHome/friend/add" class="buttonAdd">Add Connection</a>
+    </div>
+    <div class="operation" style="padding: 30px">
+        <form name='f' th:object="${sendMoney}" th:action="@{/userHome/sendMoney/sending}" method='POST'>
+
+                    <select th:field="*{relativeEmail}">
+                        <option value=""> select a connection</option>
+                        <option th:each="relativeEmail : ${relativesEmail}"
+                                th:value="${relativeEmail}"
+                                th:utext="${relativeEmail}"/>
+                    </select>
+
+                    <input type="text" placeholder="amount" class="form-control" th:field="*{amount}"/>
+
+                    <input type="text" placeholder="description" class="form-control" th:field="*{description}"/>
+
+                    <input class="buttonPay" name="submit" type="submit" value="Pay"/>
+
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="element">
+        <h2>My transactions</h2>
+    </div>
+    <div class="operation" th:if="${not #lists.isEmpty(transactions)}">
+        <table class="paginated">
+            <tr>
+                <th>Relative</th>
+                <th>Money Amount</th>
+                <th>Tax Amount</th>
+                <th>Description</th>
+                <th>Date</th>
+            </tr>
+            <tr th:each="transaction : ${transactions}">
+                <td th:text="${transaction.relativeEmail}"></td>
+                <td th:text="${transaction.Amount}"></td>
+                <td th:text="${transaction.perceiveAmountForApp}"></td>
+                <td th:text="${transaction.description}"></td>
+                <td th:text="${transaction.date}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script>
+    $("#paginated").simplePagination();
+</script>
+</body>
+</html>

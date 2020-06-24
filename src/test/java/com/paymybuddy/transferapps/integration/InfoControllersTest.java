@@ -45,7 +45,7 @@ public class InfoControllersTest extends AbstractIT{
         userAccountRepository.save(account);
         transaction.setAmount(50);
         transaction.setDate(Timestamp.from(Instant.now()));
-        transaction.setEmail("test@test.com");
+        transaction.setUserAccount(account);
         transaction.setRelativeEmail("other");
         transaction.setPerceiveAmountForApp(0);
         transaction.setSendingOrReceiving(true);

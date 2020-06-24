@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Random;
+
 /**
  * createAccount() method create a new user account with encrypted password and save it in database
  * getAccountInfo() method retrieve name and email from the user
@@ -19,11 +21,14 @@ public class ConnectionService {
 
     @Autowired
     protected UserAccountRepository userAccountRepository;
+    @Autowired
+    private MyAppUserDetailsService myAppUserDetailsService;
 
     public void createAnAccount(CreateAccount createAccount) {
         if (createAccount.getPassword().equals(createAccount.getConfirmPassword())) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
             userAccountRepository.save(new UserAccount(
+                    new Random().nextLong(),
                     createAccount.getEmail(),
                     createAccount.getName(), 0.0,
                     "USER",
@@ -36,8 +41,6 @@ public class ConnectionService {
 
     public UserAccount getAccountInfo() {
         return userAccountRepository.findByEmail(
-                MyAppUserDetailsService.currentUserEmail()
-        )
-                .get();
+                myAppUserDetailsService.currentUserAccount().getEmail()).get();
     }
 }

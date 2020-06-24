@@ -1,13 +1,11 @@
 package com.paymybuddy.transferapps.unit;
 
 
-import com.paymybuddy.transferapps.domain.BankAccount;
 import com.paymybuddy.transferapps.domain.RelationEmail;
 import com.paymybuddy.transferapps.domain.UserAccount;
-import com.paymybuddy.transferapps.repositories.BankAccountRepository;
 import com.paymybuddy.transferapps.repositories.RelativeEmailRepository;
-import com.paymybuddy.transferapps.repositories.TransactionRepository;
 import com.paymybuddy.transferapps.repositories.UserAccountRepository;
+import com.paymybuddy.transferapps.service.MyAppUserDetailsService;
 import com.paymybuddy.transferapps.service.RelativeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,11 +14,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +25,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 public class RelativeServiceTest {
 
-
+    @Mock
+    private MyAppUserDetailsService myAppUserDetailsService;
     @Mock
     private RelativeEmailRepository relativeEmailRepository;
     @Mock
@@ -60,7 +56,8 @@ public class RelativeServiceTest {
         List<RelationEmail> relatives = new ArrayList<>();
         relatives.add(relationEmail);
         when(userAccountRepository.findByEmail(any())).thenReturn(userAccountOptional);
-        when(relativeEmailRepository.findByEmail(any())).thenReturn(relatives);
+        when(relativeEmailRepository.findByUserAccount(any())).thenReturn(relatives);
+        when(myAppUserDetailsService.currentUserAccount()).thenReturn(userAccount);
     }
 
     @Test
@@ -72,7 +69,7 @@ public class RelativeServiceTest {
         verify(relativeEmailRepository).save(acUserAccount.capture());
         RelationEmail result = acUserAccount.getValue();
         assertThat(result.getRelativeEmail()).isEqualTo("a@guy.com");
-        assertThat(result.getEmail()).isEqualTo("test@Mock.com");
+        assertThat(result.getUserAccount().getEmail()).isEqualTo("test@Mock.com");
     }
 
     @Test
@@ -88,7 +85,7 @@ public class RelativeServiceTest {
         relationEmail.setRelativeEmail("yetanother@guy.com");
         relationEmail.setId(50L);
         relationEmails.add(relationEmail);
-        when(relativeEmailRepository.findByEmail(anyString())).thenReturn(relationEmails);
+        when(relativeEmailRepository.findByUserAccount(any())).thenReturn(relationEmails);
         //ACT
         List<String> result =relativeService.getRelatives();
         //ASSERT

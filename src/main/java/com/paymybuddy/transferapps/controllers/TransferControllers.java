@@ -38,4 +38,20 @@ public class TransferControllers {
         };
         return "redirect:/userHome";
     }
+
+    public void setRelativeService(RelativeService relativeService) {
+        this.relativeService = relativeService;
+    }
+
+    public RelativeService getRelativeService() {
+        return relativeService;
+    }
+
+    public void setMoneyTransferService(MoneyTransferService moneyTransferService) {
+        this.moneyTransferService = moneyTransferService;
+    }
+
+    public MoneyTransferService getMoneyTransferService() {
+        return moneyTransferService;
+    }
 }

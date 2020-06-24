@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" th:href="@{/css/transferApps.css}"/>
+</head>
+
+<body>
+<div th:replace="header :: header">
+</div>
+<div class="greyAddressLayout">
+    <p><a href="/userHome">Home</a> / <a href="/userHome/contact">Contact</a></p>
+</div>
+<div class="container">
+    <div class="element">
+        <h2>Contact</h2>
+    </div>
+    <div class="operation">
+        <table>
+            <tr>
+                <th>Address</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Hours</th>
+            </tr>
+            <tr>
+                <td>33 7thStreet Ontario</td>
+                <td>paymybuddy@totomail.org</td>
+                <td>000-555-888</td>
+                <td>8AM to 5PM</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

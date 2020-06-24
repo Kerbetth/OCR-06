@@ -1,33 +1,19 @@
 package com.paymybuddy.transferapps.integration;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paymybuddy.transferapps.domain.BankAccount;
 import com.paymybuddy.transferapps.domain.RelationEmail;
 import com.paymybuddy.transferapps.domain.UserAccount;
-import com.paymybuddy.transferapps.dto.Deposit;
 import com.paymybuddy.transferapps.dto.SendMoney;
-import com.paymybuddy.transferapps.repositories.BankAccountRepository;
-import com.paymybuddy.transferapps.repositories.RelativeEmailRepository;
-import com.paymybuddy.transferapps.repositories.UserAccountRepository;
-import com.paymybuddy.transferapps.service.MoneyTransferService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import org.springframework.http.MediaType;
+
+
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,6 +31,7 @@ public class SendMoneyTestIT extends AbstractIT{
 
     @BeforeEach
     public void setup() {
+        account.setId(new Random().nextLong());
         account.setEmail("test@test.com");
         account.setName("user");
         account.setPassword("password");
@@ -52,6 +39,7 @@ public class SendMoneyTestIT extends AbstractIT{
         account.setMoneyAmount(50);
         userAccountRepository.save(account);
 
+        account2.setId(new Random().nextLong());
         account2.setEmail("friend@test.com");
         account2.setName("friend");
         account2.setPassword("password");
@@ -61,12 +49,13 @@ public class SendMoneyTestIT extends AbstractIT{
 
         relationEmail.setId(1L);
         relationEmail.setRelativeEmail("friend@test.com");
-        relationEmail.setEmail("test@test.com");
+        relationEmail.setUserAccount(account);
         relativeEmailRepository.save(relationEmail);
 
+        bankAccount.setId(new Random().nextLong());
         bankAccount.setAccountIban("5555");
         bankAccount.setAccountName("myAccount");
-        bankAccount.setEmail("test@test.com");
+        bankAccount.setUserAccount(account);
         bankAccountRepository.save(bankAccount);
 
     }
@@ -99,14 +88,16 @@ public class SendMoneyTestIT extends AbstractIT{
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
-        assertThat(bankAccountRepository.findByEmail("test@test.com")).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(30);
     }
     @Test
     public void errorIfTooMuchMoneyInTheRelativeAccount() throws Exception {
-        account2.setMoneyAmount(9990);
-        userAccountRepository.save(account2);
+        UserAccount userAccount = userAccountRepository.findByEmail("friend@test.com").get();
+        userAccount.setMoneyAmount(9990);
+        userAccountRepository.save(userAccount);
+
         SendMoney sendMoney = new SendMoney();
         sendMoney.setRelativeEmail("friend@test.com");
         sendMoney.setAmount(20);
@@ -121,7 +112,7 @@ public class SendMoneyTestIT extends AbstractIT{
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome/transfer"));
-        assertThat(bankAccountRepository.findByEmail("test@test.com")).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(50);
         assertThat(userAccountRepository.findByEmail("friend@test.com").get().getMoneyAmount()).isEqualTo(9990);
@@ -141,7 +132,7 @@ public class SendMoneyTestIT extends AbstractIT{
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome/transfer"));
-        assertThat(bankAccountRepository.findByEmail("test@test.com")).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(50);
         assertThat(userAccountRepository.findByEmail("friend@test.com").get().getMoneyAmount()).isEqualTo(50);
@@ -162,7 +153,7 @@ public class SendMoneyTestIT extends AbstractIT{
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome/transfer"));
-        assertThat(bankAccountRepository.findByEmail("test@test.com")).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(50);
         assertThat(userAccountRepository.findByEmail("friend@test.com").get().getMoneyAmount()).isEqualTo(50);
@@ -184,7 +175,7 @@ public class SendMoneyTestIT extends AbstractIT{
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
-        assertThat(bankAccountRepository.findByEmail("test@test.com")).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(30);
 

@@ -1,31 +1,14 @@
 package com.paymybuddy.transferapps.integration;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paymybuddy.transferapps.domain.BankAccount;
-import com.paymybuddy.transferapps.domain.Transaction;
 import com.paymybuddy.transferapps.domain.UserAccount;
 import com.paymybuddy.transferapps.dto.Deposit;
-import com.paymybuddy.transferapps.repositories.BankAccountRepository;
-import com.paymybuddy.transferapps.repositories.TransactionRepository;
-import com.paymybuddy.transferapps.repositories.UserAccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.sql.Timestamp;
-import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,15 +23,18 @@ public class DepositTestIT extends AbstractIT{
 
     @BeforeEach
     public void setup() {
+        account.setId(2L);
         account.setEmail("test@test.com");
         account.setName("user");
         account.setPassword("password");
         account.setRole("ADMIN");
         account.setMoneyAmount(50);
         userAccountRepository.save(account);
+
+        bankAccount.setId(1L);
         bankAccount.setAccountIban("5555");
         bankAccount.setAccountName("myAccount");
-        bankAccount.setEmail("test@test.com");
+        bankAccount.setUserAccount(account);
         bankAccountRepository.save(bankAccount);
 
     }
@@ -94,10 +80,10 @@ public class DepositTestIT extends AbstractIT{
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
 
-        assertThat(bankAccountRepository.findByEmail("test@test.com")).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
-        assertThat(transactionRepository.findByEmail("test@test.com")).hasSize(1);
-        assertThat(transactionRepository.findByEmail("test@test.com").get(0).getDescription()).isEqualTo(deposit.getDescription());
+        assertThat(transactionRepository.findByUserAccount(account)).hasSize(1);
+        assertThat(transactionRepository.findByUserAccount(account).get(0).getDescription()).isEqualTo(deposit.getDescription());
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(30);
     }
 
@@ -116,7 +102,7 @@ public class DepositTestIT extends AbstractIT{
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
 
-        assertThat(bankAccountRepository.findByEmail("test@test.com")).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(30);
 
@@ -148,7 +134,7 @@ public class DepositTestIT extends AbstractIT{
                 .andExpect(status().isFound())
                 .andExpect(status().is3xxRedirection());
 
-        assertThat(bankAccountRepository.findByEmail("test@test.com")).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(50);
         assertThat(transactionRepository.findAll()).isEmpty();

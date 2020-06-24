@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" th:href="@{/css/transferApps.css}"/>
+</head>
+
+<body>
+<div th:replace="header :: header">
+</div>
+<div class="greyAddressLayout">
+    <p><a href="/userHome">Home</a> / <a href="/userHome/profile">Profile</a></p>
+</div>
+<div class="container">
+    <div class="element">
+        <h2>Bank accounts</h2>
+        <a href="/userHome/bankAccount/add" class="buttonAdd">Add Bank Account</a>
+    </div>
+    <div class="operation" th:if="${not #lists.isEmpty(bankAccounts)}">
+        <table>
+            <tr>
+                <th>Bank Name</th>
+                <th>Bank Iban</th>
+            </tr>
+            <tr th:each="bankAccount : ${bankAccounts}">
+                <td th:text="${bankAccount.accountName}"></td>
+                <td th:text="${bankAccount.accountIban}"></td>
+            </tr>
+        </table>
+    </div>
+    <div style="display: flex; text-align: center;">
+        <a href="/userHome/withdrawMoney/withdraw" class="buttonPut">Withdraw money from an account</a>
+        <a href="/userHome/depositMoney/deposit" class="buttonPut">Deposit money on an account</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="element">
+        <h2>
+            Account profile
+        </h2>
+    </div>
+    <div class="operation">
+        <table>
+            <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Money Amount</th>
+                <th>Relatives</th>
+            </tr>
+            <tr>
+                <td th:text="${userAccount.email}"></td>
+                <td th:text="${userAccount.name}"></td>
+                <td th:text="${userAccount.moneyAmount}"></td>
+                <td th:text="${relatives}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * MyAppUserDetailsService methods are use to keep authitfication of the user during is navigation in the website
+ * MyAppUserDetailsService methods are use to keep authitfication of the user during his navigation in the website
  */
 
 @Service
@@ -35,11 +35,11 @@ public class MyAppUserDetailsService implements UserDetailsService {
         return userDetails;
     }
 
-    public static String currentUserEmail() {
+    public UserAccount currentUserAccount() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {
-            return authentication.getName();
+            return userAccountRepository.findByEmail(authentication.getName()).get();
         }
         return null;
     }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -31,11 +32,13 @@ public class MoneyTransferService {
     private BankAccountRepository bankAccountRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private MyAppUserDetailsService myAppUserDetailsService;
 
     public boolean addABankAccount(BankAccount bankAccount) {
         // TODO: create a service in order to verify the IBAN
         if (bankAccountRepository.findByAccountIban(bankAccount.getAccountIban()).isEmpty()) {
-            bankAccount.setEmail(MyAppUserDetailsService.currentUserEmail());
+            bankAccount.setUserAccount(myAppUserDetailsService.currentUserAccount());
             bankAccountRepository.save(bankAccount);
             return true;
         } else {
@@ -46,18 +49,16 @@ public class MoneyTransferService {
 
     public boolean withDrawMoneyFromBankAndAddOnTheAccount(Deposit deposit) {
         //TODO: make contact with the bank to have permission to withdraw
-        UserAccount userAccount = userAccountRepository.findByEmail(
-                MyAppUserDetailsService.currentUserEmail()
-        )
-                .get();
+        UserAccount userAccount = myAppUserDetailsService.currentUserAccount();
         if (userAccount.getMoneyAmount() + deposit.getAmount() < 10000) {
             userAccount.setMoneyAmount(userAccount.getMoneyAmount() + deposit.getAmount());
             userAccountRepository.save(userAccount);
             Transaction transaction = new Transaction(
+                    new Random().nextLong(),
                     false,
                     deposit.getDescription(),
                     deposit.getAmount(),
-                    userAccount.getEmail(),
+                    userAccount,
                     deposit.getAccountName(),
                     Timestamp.from(Instant.now()),
                     0.0);
@@ -70,19 +71,17 @@ public class MoneyTransferService {
     }
 
     public boolean depositMoneyToBankAccount(Deposit deposit) {
-        UserAccount userAccount = userAccountRepository.findByEmail(
-                MyAppUserDetailsService.currentUserEmail()
-        )
-                .get();
+        UserAccount userAccount = myAppUserDetailsService.currentUserAccount();
         if (userAccount.getMoneyAmount() > deposit.getAmount()) {
             userAccount.setMoneyAmount(userAccount.getMoneyAmount() - deposit.getAmount());
             userAccountRepository.save(userAccount);
             //TODO: make contact with the bank in order to complete the transaction
             Transaction transaction = new Transaction(
+                    new Random().nextLong(),
                     true,
                     deposit.getDescription(),
                     -deposit.getAmount(),
-                    userAccount.getEmail(),
+                    userAccount,
                     deposit.getAccountName(),
                     Timestamp.from(Instant.now()),
                     0.0);
@@ -95,10 +94,7 @@ public class MoneyTransferService {
     }
 
     public boolean sendMoneyToARelative(SendMoney sendMoney) {
-        UserAccount userAccount = userAccountRepository.findByEmail(
-                MyAppUserDetailsService.currentUserEmail()
-        )
-                .get();
+        UserAccount userAccount = myAppUserDetailsService.currentUserAccount();
         double amount = Math.ceil(95 * sendMoney.getAmount());
         double taxApps = Math.floor(5 * sendMoney.getAmount());
         //debit the account of the sender
@@ -117,19 +113,21 @@ public class MoneyTransferService {
                     userAccountRepository.save(userAccount);
                     //recording the transaction
                     Transaction transaction = new Transaction(
+                            new Random().nextLong(),
                             true,
                             sendMoney.getDescription(),
-                            -amount,
-                            userAccount.getEmail(),
+                            -amount / 100,
+                            userAccount,
                             sendMoney.getRelativeEmail(),
                             Timestamp.from(Instant.now()),
-                            -taxApps);
+                            -taxApps / 100);
                     transactionRepository.save(transaction);
                     Transaction transactionInverse = new Transaction(
+                            new Random().nextLong(),
                             false,
                             sendMoney.getDescription(),
-                            amount,
-                            sendMoney.getRelativeEmail(),
+                            amount / 100,
+                            userAccountRepository.findByEmail(sendMoney.getRelativeEmail()).get(),
                             userAccount.getEmail(),
                             Timestamp.from(Instant.now()),
                             0);
@@ -152,16 +150,11 @@ public class MoneyTransferService {
     //Getters
 
     public List<Transaction> getTransactionInfo() {
-        return transactionRepository.findByEmail(userAccountRepository.findByEmail(
-                MyAppUserDetailsService.currentUserEmail()
-        )
-                .get().getEmail());
+        return transactionRepository.findByUserAccount(myAppUserDetailsService.currentUserAccount()
+        );
     }
 
     public List<BankAccount> getBankAccounts() {
-        return bankAccountRepository.findByEmail(userAccountRepository.findByEmail(
-                MyAppUserDetailsService.currentUserEmail()
-        )
-                .get().getEmail());
+        return bankAccountRepository.findByUserAccount(myAppUserDetailsService.currentUserAccount());
     }
 }

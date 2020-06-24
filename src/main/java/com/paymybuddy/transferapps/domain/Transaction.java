@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Getter
@@ -13,34 +14,34 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Entity
 @Table(name = "transaction")
-public class Transaction {
+public class Transaction implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-
-
     @Column(nullable = false)
-    Boolean sendingOrReceiving;
+    private Boolean sendingOrReceiving;
     @Column
-    String description;
+    private String description;
     @Column(nullable = false)
-    double amount;
-    @Column()
-    String email;
+    private double amount;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "useraccount_email", referencedColumnName="email")
+    private UserAccount userAccount;
     @Column(nullable = false)
-    String relativeEmail;
+    private String relativeEmail;
     @Column(nullable = false)
-    Timestamp date;
+    private Timestamp date;
     @Column(nullable = false)
-    double perceiveAmountForApp;
+    private double perceiveAmountForApp;
 
 
-    public Transaction(Boolean sendingOrReceiving, String description, double amount, String email, String relativeEmail, Timestamp date, double perceiveAmountForApp) {
+    public Transaction(Long id, Boolean sendingOrReceiving, String description, double amount, UserAccount userAccount, String relativeEmail, Timestamp date, double perceiveAmountForApp) {
+        this.id = id;
         this.sendingOrReceiving = sendingOrReceiving;
         this.description = description;
         this.amount = amount;
-        this.email = email;
+        this.userAccount = userAccount;
         this.relativeEmail = relativeEmail;
         this.date = date;
         this.perceiveAmountForApp = perceiveAmountForApp;
