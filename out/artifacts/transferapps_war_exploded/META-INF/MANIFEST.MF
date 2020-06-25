@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Created-By: IntelliJ IDEA
-Built-By: dufeu
-Build-Jdk: 14.0.1
-Implementation-Title: transferapps
-Implementation-Version: 0.0.1-SNAPSHOT
-Implementation-Vendor-Id: com.paymybuddy
-Main-Class: ${start-class}
-
