@@ -1,17 +1,12 @@
 package com.paymybuddy.transferapps.integration;
 
 
-import com.paymybuddy.transferapps.domain.BankAccount;
-import com.paymybuddy.transferapps.domain.RelationEmail;
 import com.paymybuddy.transferapps.domain.UserAccount;
 import com.paymybuddy.transferapps.dto.SendMoney;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.MediaType;
 
-
-import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,12 +32,12 @@ public class SendMoneyTestIT extends AbstractIT{
     @Test
     public void sendMoneyWithSuccess() throws Exception {
         SendMoney sendMoney = new SendMoney();
-        sendMoney.setRelativeEmail("friend@test.com");
+        sendMoney.setTarget("friend@test.com");
         sendMoney.setAmount(20);
         sendMoney.setDescription("a good transfer");
         mvc.perform(post("/userHome/sendMoney/sending")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("relativeEmail",sendMoney.getRelativeEmail())
+                .param("target",sendMoney.getTarget())
                 .param("description",sendMoney.getDescription())
                 .param("amount", "20.00")
                 .requestAttr("deposit", sendMoney)
@@ -61,12 +56,12 @@ public class SendMoneyTestIT extends AbstractIT{
         userAccountRepository.save(userAccount);
 
         SendMoney sendMoney = new SendMoney();
-        sendMoney.setRelativeEmail("friend@test.com");
+        sendMoney.setTarget("friend@test.com");
         sendMoney.setAmount(20);
         sendMoney.setDescription("a good transfer");
         mvc.perform(post("/userHome/sendMoney/sending")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("relativeEmail",sendMoney.getRelativeEmail())
+                .param("target",sendMoney.getTarget())
                 .param("description",sendMoney.getDescription())
                 .param("amount", "20.00")
                 .requestAttr("deposit", sendMoney)
@@ -82,11 +77,11 @@ public class SendMoneyTestIT extends AbstractIT{
     @Test
     public void errorIfNotEnoughMoneyOnTheAccount() throws Exception {
         SendMoney sendMoney = new SendMoney();
-        sendMoney.setRelativeEmail("friend@test.com");
+        sendMoney.setTarget("friend@test.com");
         sendMoney.setDescription("a good transfer");
         mvc.perform(post("/userHome/sendMoney/sending")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("relativeEmail",sendMoney.getRelativeEmail())
+                .param("target",sendMoney.getTarget())
                 .param("description",sendMoney.getDescription())
                 .param("amount", "200.00")
                 .requestAttr("deposit", sendMoney)
@@ -103,11 +98,11 @@ public class SendMoneyTestIT extends AbstractIT{
     @Test
     public void errorIfNoExistingRelation() throws Exception {
         SendMoney sendMoney = new SendMoney();
-        sendMoney.setRelativeEmail("noname@test.com");
+        sendMoney.setTarget("noname@test.com");
         sendMoney.setDescription("a good transfer");
         mvc.perform(post("/userHome/sendMoney/sending")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("relativeEmail",sendMoney.getRelativeEmail())
+                .param("target",sendMoney.getTarget())
                 .param("description",sendMoney.getDescription())
                 .param("amount", "10.00")
                 .requestAttr("deposit", sendMoney)
@@ -124,12 +119,12 @@ public class SendMoneyTestIT extends AbstractIT{
     @Test
     public void sendMoney2timesWithSuccess() throws Exception {
         SendMoney sendMoney = new SendMoney();
-        sendMoney.setRelativeEmail("friend@test.com");
+        sendMoney.setTarget("friend@test.com");
         sendMoney.setAmount(20);
         sendMoney.setDescription("a good transfer");
         mvc.perform(post("/userHome/sendMoney/sending")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("relativeEmail",sendMoney.getRelativeEmail())
+                .param("target",sendMoney.getTarget())
                 .param("description",sendMoney.getDescription())
                 .param("amount", "20.00")
         )
@@ -141,7 +136,7 @@ public class SendMoneyTestIT extends AbstractIT{
 
         mvc.perform(post("/userHome/sendMoney/sending")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("relativeEmail",sendMoney.getRelativeEmail())
+                .param("target",sendMoney.getTarget())
                 .param("description",sendMoney.getDescription())
                 .param("amount", "10.00")
         )

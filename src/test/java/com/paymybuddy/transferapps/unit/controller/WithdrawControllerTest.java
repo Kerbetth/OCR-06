@@ -2,7 +2,7 @@ package com.paymybuddy.transferapps.unit.controller;
 
 
 import com.paymybuddy.transferapps.controllers.WithDrawMoneyControllers;
-import com.paymybuddy.transferapps.dto.Deposit;
+import com.paymybuddy.transferapps.dto.SendMoney;
 import com.paymybuddy.transferapps.service.MoneyTransferService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,9 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @ExtendWith(SpringExtension.class)
 public class WithdrawControllerTest {
@@ -43,7 +40,7 @@ public class WithdrawControllerTest {
 
     @Test
     public void withdrawingReturnGoodURL() {
-        Deposit deposit= new Deposit();
+        SendMoney deposit= new SendMoney();
         when(moneyTransferService.withDrawMoneyFromBankAndAddOnTheAccount(any())).thenReturn(true);
         String result = withDrawMoneyControllers.withdrawing(deposit);
         assertThat(result).isEqualTo("redirect:/userHome");
@@ -51,7 +48,7 @@ public class WithdrawControllerTest {
 
     @Test
     public void withdrawingReturnGoodURLWhenWrong() {
-        Deposit deposit= new Deposit();
+        SendMoney deposit= new SendMoney();
         when(moneyTransferService.withDrawMoneyFromBankAndAddOnTheAccount(any())).thenReturn(false);
         String result = withDrawMoneyControllers.withdrawing(deposit);
         assertThat(result).isEqualTo("redirect:/userHome/withdrawMoney/withdraw");

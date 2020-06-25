@@ -1,9 +1,12 @@
 package com.paymybuddy.transferapps.service;
 
-import com.paymybuddy.transferapps.domain.*;
-import com.paymybuddy.transferapps.dto.Deposit;
+import com.paymybuddy.transferapps.domain.BankAccount;
+import com.paymybuddy.transferapps.domain.Transaction;
+import com.paymybuddy.transferapps.domain.UserAccount;
 import com.paymybuddy.transferapps.dto.SendMoney;
-import com.paymybuddy.transferapps.repositories.*;
+import com.paymybuddy.transferapps.repositories.BankAccountRepository;
+import com.paymybuddy.transferapps.repositories.TransactionRepository;
+import com.paymybuddy.transferapps.repositories.UserAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,7 +50,7 @@ public class MoneyTransferService {
         }
     }
 
-    public boolean withDrawMoneyFromBankAndAddOnTheAccount(Deposit deposit) {
+    public boolean withDrawMoneyFromBankAndAddOnTheAccount(SendMoney deposit) {
         //TODO: make contact with the bank to have permission to withdraw
         UserAccount userAccount = myAppUserDetailsService.currentUserAccount();
         if (userAccount.getMoneyAmount() + deposit.getAmount() < 10000) {
@@ -59,7 +62,7 @@ public class MoneyTransferService {
                     deposit.getDescription(),
                     deposit.getAmount(),
                     userAccount,
-                    deposit.getAccountName(),
+                    deposit.getTarget(),
                     Timestamp.from(Instant.now()),
                     0.0);
             transactionRepository.save(transaction);
@@ -70,7 +73,7 @@ public class MoneyTransferService {
         }
     }
 
-    public boolean depositMoneyToBankAccount(Deposit deposit) {
+    public boolean depositMoneyToBankAccount(SendMoney deposit) {
         UserAccount userAccount = myAppUserDetailsService.currentUserAccount();
         if (userAccount.getMoneyAmount() > deposit.getAmount()) {
             userAccount.setMoneyAmount(userAccount.getMoneyAmount() - deposit.getAmount());
@@ -82,7 +85,7 @@ public class MoneyTransferService {
                     deposit.getDescription(),
                     -deposit.getAmount(),
                     userAccount,
-                    deposit.getAccountName(),
+                    deposit.getTarget(),
                     Timestamp.from(Instant.now()),
                     0.0);
             transactionRepository.save(transaction);
@@ -99,8 +102,8 @@ public class MoneyTransferService {
         double taxApps = Math.floor(5 * sendMoney.getAmount());
         //debit the account of the sender
         if (userAccount.getMoneyAmount() > sendMoney.getAmount()) {
-            if (userAccountRepository.findByEmail(sendMoney.getRelativeEmail()).isPresent()) {
-                UserAccount relativeUserAccount = userAccountRepository.findByEmail(sendMoney.getRelativeEmail()).get();
+            if (userAccountRepository.findByEmail(sendMoney.getTarget()).isPresent()) {
+                UserAccount relativeUserAccount = userAccountRepository.findByEmail(sendMoney.getTarget()).get();
                 if (relativeUserAccount.getMoneyAmount() + amount / 100 <= 10000) {
                     userAccount.setMoneyAmount(userAccount.getMoneyAmount() - amount / 100);
                     userAccountRepository.save(userAccount);
@@ -118,7 +121,7 @@ public class MoneyTransferService {
                             sendMoney.getDescription(),
                             -amount / 100,
                             userAccount,
-                            sendMoney.getRelativeEmail(),
+                            sendMoney.getTarget(),
                             Timestamp.from(Instant.now()),
                             -taxApps / 100);
                     transactionRepository.save(transaction);
@@ -127,7 +130,7 @@ public class MoneyTransferService {
                             false,
                             sendMoney.getDescription(),
                             amount / 100,
-                            userAccountRepository.findByEmail(sendMoney.getRelativeEmail()).get(),
+                            userAccountRepository.findByEmail(sendMoney.getTarget()).get(),
                             userAccount.getEmail(),
                             Timestamp.from(Instant.now()),
                             0);

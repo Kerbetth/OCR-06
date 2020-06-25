@@ -3,7 +3,6 @@ package com.paymybuddy.transferapps.unit;
 
 import com.paymybuddy.transferapps.domain.BankAccount;
 import com.paymybuddy.transferapps.domain.UserAccount;
-import com.paymybuddy.transferapps.dto.Deposit;
 import com.paymybuddy.transferapps.dto.SendMoney;
 import com.paymybuddy.transferapps.repositories.BankAccountRepository;
 import com.paymybuddy.transferapps.repositories.TransactionRepository;
@@ -20,13 +19,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -48,7 +44,7 @@ public class MoneyTransferServiceTest {
     private UserAccount userAccount;
 
     private SendMoney sendMoney;
-    private Deposit deposit;
+    private SendMoney sendMoney2;
 
 
     @InjectMocks
@@ -61,13 +57,13 @@ public class MoneyTransferServiceTest {
         userAccount.setMoneyAmount(100);
         userAccount.setEmail("test@Mock.com");
         userAccount.setName("John");
-        deposit = new Deposit();
-        deposit.setAccountName("OtherAccount");
-        deposit.setAmount(55.55);
-        deposit.setDescription("description");
+        sendMoney2 = new SendMoney();
+        sendMoney2.setTarget("OtherAccount");
+        sendMoney2.setAmount(55.55);
+        sendMoney2.setDescription("description");
         sendMoney = new SendMoney();
         sendMoney.setAmount(55.55);
-        sendMoney.setRelativeEmail("this@guy.com");
+        sendMoney.setTarget("this@guy.com");
         when(myAppUserDetailsService.currentUserAccount()).thenReturn(userAccount);
 
     }
@@ -78,7 +74,7 @@ public class MoneyTransferServiceTest {
 
         when(userAccountRepository.findByEmail(any())).thenReturn(java.util.Optional.ofNullable(userAccount));
         //ACT
-        moneyTransferService.withDrawMoneyFromBankAndAddOnTheAccount(deposit);
+        moneyTransferService.withDrawMoneyFromBankAndAddOnTheAccount(sendMoney2);
         //ASSERT
         verify(userAccountRepository).save(acUserAccount.capture());
         UserAccount result = acUserAccount.getValue();
@@ -92,7 +88,7 @@ public class MoneyTransferServiceTest {
         userAccount.setMoneyAmount(10);
         when(userAccountRepository.findByEmail(any())).thenReturn(java.util.Optional.ofNullable(userAccount));
         //ACT
-        moneyTransferService.depositMoneyToBankAccount(deposit);
+        moneyTransferService.depositMoneyToBankAccount(sendMoney2);
         //ASSERT
         verify(userAccountRepository, times(0)).save(any());
         verify(transactionRepository, times(0)).save(any());
@@ -104,7 +100,7 @@ public class MoneyTransferServiceTest {
         //ARRANGE
         when(userAccountRepository.findByEmail(any())).thenReturn(java.util.Optional.ofNullable(userAccount));
         //ACT
-        moneyTransferService.depositMoneyToBankAccount(deposit);
+        moneyTransferService.depositMoneyToBankAccount(sendMoney2);
         verify(userAccountRepository).save( acUserAccount.capture());
         UserAccount result = acUserAccount.getValue();
         //ASSERT
@@ -200,7 +196,6 @@ public class MoneyTransferServiceTest {
         verify(bankAccountRepository, times(1)).save(acBankAccount.capture());
         assertThat(acBankAccount.getValue().getAccountIban()).isEqualTo(bankAccount.getAccountIban());
         assertThat(acBankAccount.getValue().getAccountName()).isEqualTo(bankAccount.getAccountName());
-        //assertThat(acBankAccount.getValue().getEmail()).isEqualTo(null);
     }
 
 }

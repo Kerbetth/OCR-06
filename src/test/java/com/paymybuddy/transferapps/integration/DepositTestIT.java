@@ -1,7 +1,8 @@
 package com.paymybuddy.transferapps.integration;
 
 
-import com.paymybuddy.transferapps.dto.Deposit;
+import com.paymybuddy.transferapps.dto.SendMoney;
+import com.paymybuddy.transferapps.dto.SendMoney;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
@@ -16,12 +17,12 @@ public class DepositTestIT extends AbstractIT{
 
 
     @Test
-    public void accessDepositFormWithSuccess() throws Exception {
+    public void accessSendMoneyFormWithSuccess() throws Exception {
         mvc.perform(get("/userHome/depositMoney/deposit")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("amount", "50")
                 .content("amount")
-                .sessionAttr("dto", new Deposit())
+                .sessionAttr("dto", new SendMoney())
         )
                 .andExpect(status().isOk())
                 .andExpect(view().name("depositMoney"));
@@ -33,22 +34,22 @@ public class DepositTestIT extends AbstractIT{
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("amount", "50")
                 .content("amount")
-                .sessionAttr("dto", new Deposit())
+                .sessionAttr("dto", new SendMoney())
         )
                 .andExpect(status().isOk())
                 .andExpect(view().name("withdrawMoney"));
     }
 
     @Test
-    public void depositMoneyWithSuccess() throws Exception {
-        Deposit deposit = new Deposit();
-        deposit.setAccountName("myAccount");
-        deposit.setAmount(20);
-        deposit.setDescription("a description");
+    public void DepositMoneyWithSuccess() throws Exception {
+        SendMoney sendMoney = new SendMoney();
+        sendMoney.setTarget("myAccount");
+        sendMoney.setAmount(20);
+        sendMoney.setDescription("a description");
         mvc.perform(post("/userHome/depositMoney/depositing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("accountName",deposit.getAccountName())
-                .param("description",deposit.getDescription())
+                .param("target",sendMoney.getTarget())
+                .param("description",sendMoney.getDescription())
                 .param("amount", "20.00")
         )
                 .andExpect(status().isFound())
@@ -57,18 +58,18 @@ public class DepositTestIT extends AbstractIT{
         assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(transactionRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(2);
-        assertThat(transactionRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get()).get(0).getDescription()).isEqualTo(deposit.getDescription());
+        assertThat(transactionRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get()).get(0).getDescription()).isEqualTo(sendMoney.getDescription());
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(80);
     }
 
     @Test
-    public void depositMoney2timesWithSuccess() throws Exception {
-        Deposit deposit = new Deposit();
-        deposit.setAccountName("myAccount");
+    public void DepositMoney2timesWithSuccess() throws Exception {
+        SendMoney sendMoney = new SendMoney();
+        sendMoney.setTarget("myAccount");
         mvc.perform(post("/userHome/depositMoney/depositing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("accountName",deposit.getAccountName())
-                .param("description",deposit.getDescription())
+                .param("target",sendMoney.getTarget())
+                .param("description",sendMoney.getDescription())
                 .param("amount", "20.00")
         )
                 .andExpect(status().isFound())
@@ -80,8 +81,8 @@ public class DepositTestIT extends AbstractIT{
 
         mvc.perform(post("/userHome/depositMoney/depositing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("accountName",deposit.getAccountName())
-                .param("description",deposit.getDescription())
+                .param("target",sendMoney.getTarget())
+                .param("description",sendMoney.getDescription())
                 .param("amount", "20.00")
         )
                 .andExpect(status().isFound())
@@ -90,13 +91,13 @@ public class DepositTestIT extends AbstractIT{
     }
 
     @Test
-    public void depositMoreMoneyThanItsOwnAndReturnError() throws Exception {
-        Deposit deposit = new Deposit();
-        deposit.setAccountName("myAccount");
+    public void DepositMoreMoneyThanItsOwnAndReturnError() throws Exception {
+        SendMoney sendMoney = new SendMoney();
+        sendMoney.setTarget("myAccount");
         mvc.perform(post("/userHome/depositMoney/depositing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("accountName",deposit.getAccountName())
-                .param("description",deposit.getDescription())
+                .param("target",sendMoney.getTarget())
+                .param("description",sendMoney.getDescription())
                 .param("amount", "200.00")
         )
                 .andExpect(status().isFound())

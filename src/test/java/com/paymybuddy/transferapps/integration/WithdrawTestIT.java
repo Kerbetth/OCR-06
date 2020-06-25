@@ -1,10 +1,7 @@
 package com.paymybuddy.transferapps.integration;
 
 
-import com.paymybuddy.transferapps.domain.BankAccount;
-import com.paymybuddy.transferapps.domain.UserAccount;
-import com.paymybuddy.transferapps.dto.Deposit;
-import org.junit.jupiter.api.BeforeEach;
+import com.paymybuddy.transferapps.dto.SendMoney;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
@@ -25,7 +22,7 @@ public class WithdrawTestIT extends AbstractIT{
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("amount", "50")
                 .content("amount")
-                .sessionAttr("dto", new Deposit())
+                .sessionAttr("dto", new SendMoney())
         )
                 .andExpect(status().isOk())
                 .andExpect(view().name("withdrawMoney"));
@@ -33,16 +30,14 @@ public class WithdrawTestIT extends AbstractIT{
 
     @Test
     public void withdrawMoneyWithSuccess() throws Exception {
-        Deposit withdraw = new Deposit();
-        withdraw.setAccountName("myAccount");
+        SendMoney withdraw = new SendMoney();
+        withdraw.setTarget("myAccount");
         withdraw.setDescription("a description");
         mvc.perform(post("/userHome/withdrawMoney/withdrawing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("accountName",withdraw.getAccountName())
+                .param("target",withdraw.getTarget())
                 .param("description",withdraw.getDescription())
                 .param("amount", "20.00")
-                .requestAttr("withdraw", withdraw)
-                .contentType(MediaType.APPLICATION_XHTML_XML)
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
@@ -56,15 +51,13 @@ public class WithdrawTestIT extends AbstractIT{
 
     @Test
     public void withdrawMoney2timesWithSuccess() throws Exception {
-        Deposit withdraw = new Deposit();
-        withdraw.setAccountName("myAccount");
+        SendMoney withdraw = new SendMoney();
+        withdraw.setTarget("myAccount");
         mvc.perform(post("/userHome/withdrawMoney/withdrawing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("accountName",withdraw.getAccountName())
+                .param("target",withdraw.getTarget())
                 .param("description",withdraw.getDescription())
                 .param("amount", "20.00")
-                .requestAttr("withdraw", withdraw)
-                .contentType(MediaType.APPLICATION_XHTML_XML)
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
@@ -75,11 +68,9 @@ public class WithdrawTestIT extends AbstractIT{
 
         mvc.perform(post("/userHome/withdrawMoney/withdrawing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("accountName",withdraw.getAccountName())
+                .param("target",withdraw.getTarget())
                 .param("description",withdraw.getDescription())
                 .param("amount", "20.00")
-                .requestAttr("withdraw", withdraw)
-                .contentType(MediaType.APPLICATION_XHTML_XML)
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
@@ -88,15 +79,13 @@ public class WithdrawTestIT extends AbstractIT{
 
     @Test
     public void returnErrorIfMoneyAmountBreakTheMaximumAmountPossible() throws Exception {
-        Deposit withdraw = new Deposit();
-        withdraw.setAccountName("myAccount");
+        SendMoney withdraw = new SendMoney();
+        withdraw.setTarget("myAccount");
         mvc.perform(post("/userHome/withdrawMoney/withdrawing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("accountName",withdraw.getAccountName())
+                .param("target",withdraw.getTarget())
                 .param("description",withdraw.getDescription())
                 .param("amount", "11000.00")
-                .requestAttr("withdraw", withdraw)
-                .contentType(MediaType.APPLICATION_XHTML_XML)
         )
                 .andExpect(status().isFound())
                 .andExpect(status().is3xxRedirection());

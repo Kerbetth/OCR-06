@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SendMoney {
-    String relativeEmail;
+    String target;
     String description;
     double amount;
 }

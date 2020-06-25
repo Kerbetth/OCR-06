@@ -1,8 +1,7 @@
 package com.paymybuddy.transferapps.unit.controller;
 
 import com.paymybuddy.transferapps.controllers.DepositControllers;
-import com.paymybuddy.transferapps.dto.CreateAccount;
-import com.paymybuddy.transferapps.dto.Deposit;
+import com.paymybuddy.transferapps.dto.SendMoney;
 import com.paymybuddy.transferapps.service.MoneyTransferService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,12 +11,9 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.Model;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @ExtendWith(SpringExtension.class)
 public class DepositControllerTest {
@@ -42,7 +38,7 @@ public class DepositControllerTest {
 
     @Test
     public void depositingReturnGoodURL() {
-        Deposit deposit= new Deposit();
+        SendMoney deposit= new SendMoney();
         when(moneyTransferService.depositMoneyToBankAccount(any())).thenReturn(true);
         String result = depositControllers.depositing(deposit);
 
@@ -51,7 +47,7 @@ public class DepositControllerTest {
 
     @Test
     public void depositingReturnGoodURLWhenWrong() {
-        Deposit deposit= new Deposit();
+        SendMoney deposit= new SendMoney();
         when(moneyTransferService.depositMoneyToBankAccount(any())).thenReturn(false);
         String result = depositControllers.depositing(deposit);
 

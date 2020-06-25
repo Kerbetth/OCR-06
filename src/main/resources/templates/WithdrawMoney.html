@@ -20,7 +20,7 @@
                 <tr>
                     <td>Select BankAccount:</td>
                     <td>
-                        <select th:field="*{accountName}">
+                        <select th:field="*{target}">
                             <option value=""> --</option>
                             <option th:each="bankAccountName : ${bankAccounts}"
                                     th:value="${bankAccountName.accountName}"

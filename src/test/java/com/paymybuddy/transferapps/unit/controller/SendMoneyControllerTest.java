@@ -2,7 +2,6 @@ package com.paymybuddy.transferapps.unit.controller;
 
 
 import com.paymybuddy.transferapps.controllers.TransferControllers;
-import com.paymybuddy.transferapps.dto.Deposit;
 import com.paymybuddy.transferapps.dto.SendMoney;
 import com.paymybuddy.transferapps.service.MoneyTransferService;
 import com.paymybuddy.transferapps.service.RelativeService;
@@ -11,12 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.Model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 

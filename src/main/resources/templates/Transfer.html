@@ -23,7 +23,7 @@
     <div class="operation" style="padding: 30px">
         <form name='f' th:object="${sendMoney}" th:action="@{/userHome/sendMoney/sending}" method='POST'>
 
-                    <select th:field="*{relativeEmail}">
+                    <select th:field="*{target}">
                         <option value=""> select a connection</option>
                         <option th:each="relativeEmail : ${relativesEmail}"
                                 th:value="${relativeEmail}"
