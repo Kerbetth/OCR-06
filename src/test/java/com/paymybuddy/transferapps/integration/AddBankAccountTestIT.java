@@ -15,16 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class AddBankAccountTestIT extends AbstractIT{
 
-    private UserAccount account = new UserAccount();
-
-    @BeforeEach
-    public void setup() {
-        account.setEmail("test@test.com");
-        account.setName("user");
-        account.setPassword("password");
-        account.setRole("ADMIN");
-        userAccountRepository.save(account);
-    }
 
     @Test
     public void fillBankFormWithSuccess() throws Exception {
@@ -50,7 +40,7 @@ public class AddBankAccountTestIT extends AbstractIT{
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
-        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(2);
         assertThat(bankAccountRepository.findByAccountIban("555444888")).isPresent();
     }
 
@@ -67,7 +57,7 @@ public class AddBankAccountTestIT extends AbstractIT{
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
 
-        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(2);
         assertThat(bankAccountRepository.findByAccountIban("555444888")).isPresent();
         bankAccount.setAccountIban("555555888");
         mvc.perform(post("/userHome/bankAccount/adding")
@@ -77,7 +67,7 @@ public class AddBankAccountTestIT extends AbstractIT{
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
-        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(2);
+        assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(3);
         assertThat(bankAccountRepository.findByAccountIban("555555888")).isPresent();
     }
 }

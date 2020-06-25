@@ -18,24 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class WithdrawTestIT extends AbstractIT{
 
 
-    private UserAccount account = new UserAccount();
-    private BankAccount bankAccount = new BankAccount();
-
-    @BeforeEach
-    public void setup() {
-        account.setEmail("test@test.com");
-        account.setName("user");
-        account.setPassword("password");
-        account.setRole("ADMIN");
-        account.setMoneyAmount(50);
-        userAccountRepository.save(account);
-        bankAccount.setAccountIban("5555");
-        bankAccount.setAccountName("myAccount");
-        bankAccount.setUserAccount(account);
-        bankAccountRepository.save(bankAccount);
-
-    }
-
 
     @Test
     public void accessWithdrawFormWithSuccess() throws Exception {
@@ -65,11 +47,11 @@ public class WithdrawTestIT extends AbstractIT{
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
 
-        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
-        assertThat(transactionRepository.findByUserAccount(account)).hasSize(1);
-        assertThat(transactionRepository.findByUserAccount(account).get(0).getDescription()).isEqualTo(withdraw.getDescription());
-        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(70);
+        assertThat(transactionRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(2);
+        assertThat(transactionRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get()).get(0).getDescription()).isEqualTo(withdraw.getDescription());
+        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(120);
     }
 
     @Test
@@ -87,9 +69,9 @@ public class WithdrawTestIT extends AbstractIT{
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
 
-        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
-        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(70);
+        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(120);
 
         mvc.perform(post("/userHome/withdrawMoney/withdrawing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -101,7 +83,7 @@ public class WithdrawTestIT extends AbstractIT{
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
-        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(90);
+        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(140);
     }
 
     @Test
@@ -119,9 +101,9 @@ public class WithdrawTestIT extends AbstractIT{
                 .andExpect(status().isFound())
                 .andExpect(status().is3xxRedirection());
 
-        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
-        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(50);
-        assertThat(transactionRepository.findAll()).isEmpty();
+        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(100);
+        assertThat(transactionRepository.findAll()).hasSize(1);
     }
 }

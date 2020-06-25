@@ -13,18 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class UserHomeControllerTestIT extends AbstractIT {
 
-
-    private UserAccount account = new UserAccount();
-
-    @BeforeEach
-    public void setup() {
-        account.setEmail("test@test.com");
-        account.setName("user");
-        account.setPassword("password");
-        account.setRole("ADMIN");
-        userAccountRepository.save(account);
-    }
-
     @Test
     public void getUserPage() throws Exception {
         mvc.perform(get("/userHome")

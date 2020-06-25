@@ -34,24 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class InfoControllersTest extends AbstractIT{
 
 
-    private UserAccount account = new UserAccount();
-    private Transaction transaction = new Transaction();
-    @BeforeEach
-    public void setup() {
-        account.setEmail("test@test.com");
-        account.setName("user");
-        account.setPassword("password");
-        account.setRole("ADMIN");
-        userAccountRepository.save(account);
-        transaction.setAmount(50);
-        transaction.setDate(Timestamp.from(Instant.now()));
-        transaction.setUserAccount(account);
-        transaction.setRelativeEmail("other");
-        transaction.setPerceiveAmountForApp(0);
-        transaction.setSendingOrReceiving(true);
-        transaction.setId(5L);
-        transactionRepository.save(transaction);
-    }
 
     @Test
     public void userAccountInfoControllers() throws Exception {

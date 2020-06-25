@@ -1,10 +1,7 @@
 package com.paymybuddy.transferapps.integration;
 
 
-import com.paymybuddy.transferapps.domain.BankAccount;
-import com.paymybuddy.transferapps.domain.UserAccount;
 import com.paymybuddy.transferapps.dto.Deposit;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
@@ -17,27 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class DepositTestIT extends AbstractIT{
 
-
-    private UserAccount account = new UserAccount();
-    private BankAccount bankAccount = new BankAccount();
-
-    @BeforeEach
-    public void setup() {
-        account.setId(2L);
-        account.setEmail("test@test.com");
-        account.setName("user");
-        account.setPassword("password");
-        account.setRole("ADMIN");
-        account.setMoneyAmount(50);
-        userAccountRepository.save(account);
-
-        bankAccount.setId(1L);
-        bankAccount.setAccountIban("5555");
-        bankAccount.setAccountName("myAccount");
-        bankAccount.setUserAccount(account);
-        bankAccountRepository.save(bankAccount);
-
-    }
 
     @Test
     public void accessDepositFormWithSuccess() throws Exception {
@@ -74,17 +50,15 @@ public class DepositTestIT extends AbstractIT{
                 .param("accountName",deposit.getAccountName())
                 .param("description",deposit.getDescription())
                 .param("amount", "20.00")
-                .requestAttr("deposit", deposit)
-                .contentType(MediaType.APPLICATION_XHTML_XML)
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
 
-        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
-        assertThat(transactionRepository.findByUserAccount(account)).hasSize(1);
-        assertThat(transactionRepository.findByUserAccount(account).get(0).getDescription()).isEqualTo(deposit.getDescription());
-        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(30);
+        assertThat(transactionRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(2);
+        assertThat(transactionRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get()).get(0).getDescription()).isEqualTo(deposit.getDescription());
+        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(80);
     }
 
     @Test
@@ -96,27 +70,23 @@ public class DepositTestIT extends AbstractIT{
                 .param("accountName",deposit.getAccountName())
                 .param("description",deposit.getDescription())
                 .param("amount", "20.00")
-                .requestAttr("deposit", deposit)
-                .contentType(MediaType.APPLICATION_XHTML_XML)
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
 
-        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
-        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(30);
+        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(80);
 
         mvc.perform(post("/userHome/depositMoney/depositing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("accountName",deposit.getAccountName())
                 .param("description",deposit.getDescription())
                 .param("amount", "20.00")
-                .requestAttr("deposit", deposit)
-                .contentType(MediaType.APPLICATION_XHTML_XML)
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
-        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(10);
+        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(60);
     }
 
     @Test
@@ -127,16 +97,14 @@ public class DepositTestIT extends AbstractIT{
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("accountName",deposit.getAccountName())
                 .param("description",deposit.getDescription())
-                .param("amount", "100.00")
-                .requestAttr("deposit", deposit)
-                .contentType(MediaType.APPLICATION_XHTML_XML)
+                .param("amount", "200.00")
         )
                 .andExpect(status().isFound())
                 .andExpect(status().is3xxRedirection());
 
-        assertThat(bankAccountRepository.findByUserAccount(account)).hasSize(1);
+        assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
-        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(50);
-        assertThat(transactionRepository.findAll()).isEmpty();
+        assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(100);
+        assertThat(transactionRepository.findAll()).hasSize(1);
     }
 }

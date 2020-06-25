@@ -20,7 +20,7 @@ public class Transaction implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @Column(nullable = false)
-    private Boolean sendingOrReceiving;
+    private Boolean isReceiving;
     @Column
     private String description;
     @Column(nullable = false)
@@ -36,9 +36,9 @@ public class Transaction implements Serializable {
     private double perceiveAmountForApp;
 
 
-    public Transaction(Long id, Boolean sendingOrReceiving, String description, double amount, UserAccount userAccount, String relativeEmail, Timestamp date, double perceiveAmountForApp) {
+    public Transaction(Long id, Boolean isReceiving, String description, double amount, UserAccount userAccount, String relativeEmail, Timestamp date, double perceiveAmountForApp) {
         this.id = id;
-        this.sendingOrReceiving = sendingOrReceiving;
+        this.isReceiving = isReceiving;
         this.description = description;
         this.amount = amount;
         this.userAccount = userAccount;
