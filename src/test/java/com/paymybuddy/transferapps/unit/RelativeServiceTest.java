@@ -1,7 +1,7 @@
 package com.paymybuddy.transferapps.unit;
 
 
-import com.paymybuddy.transferapps.domain.RelationEmail;
+import com.paymybuddy.transferapps.domain.UserRelation;
 import com.paymybuddy.transferapps.domain.UserAccount;
 import com.paymybuddy.transferapps.repositories.RelativeEmailRepository;
 import com.paymybuddy.transferapps.repositories.UserAccountRepository;
@@ -19,7 +19,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -32,11 +31,12 @@ public class RelativeServiceTest {
     @Mock
     private UserAccountRepository userAccountRepository;
     @Captor
-    private ArgumentCaptor<RelationEmail> acUserAccount;
+    private ArgumentCaptor<UserRelation> acUserAccount;
 
 
     private UserAccount userAccount;
-    private RelationEmail relationEmail;
+    private UserAccount userAccount2;
+    private UserRelation relationEmail;
 
 
     @InjectMocks
@@ -44,16 +44,15 @@ public class RelativeServiceTest {
 
     @BeforeEach
     public void setup() {
-        acUserAccount = ArgumentCaptor.forClass(RelationEmail.class);
+        acUserAccount = ArgumentCaptor.forClass(UserRelation.class);
         userAccount = new UserAccount();
-        userAccount.setMoneyAmount(100);
         userAccount.setEmail("test@Mock.com");
         userAccount.setName("John");
-        relationEmail = new RelationEmail();
-        relationEmail.setId(0L);
-        relationEmail.setRelativeEmail("a@guy.com");
-        Optional<UserAccount> userAccountOptional = Optional.of(userAccount);
-        List<RelationEmail> relatives = new ArrayList<>();
+        userAccount2 = new UserAccount();
+        userAccount2.setEmail("a@guy.com");
+        userAccount2.setName("John2");
+        Optional<UserAccount> userAccountOptional = Optional.of(userAccount2);
+        List<UserRelation> relatives = new ArrayList<>();
         relatives.add(relationEmail);
         when(userAccountRepository.findByEmail(any())).thenReturn(userAccountOptional);
         when(relativeEmailRepository.findByUserAccount(any())).thenReturn(relatives);
@@ -64,25 +63,25 @@ public class RelativeServiceTest {
     public void returnGoodAmountOfMoneyDuringWithdrawFromBank() {
         //ARRANGE
         //ACT
-        relativeService.addAFriend(relationEmail);
+        relativeService.addAFriend("a@guy.com");
         //ASSERT
         verify(relativeEmailRepository).save(acUserAccount.capture());
-        RelationEmail result = acUserAccount.getValue();
-        assertThat(result.getRelativeEmail()).isEqualTo("a@guy.com");
+        UserRelation result = acUserAccount.getValue();
+        assertThat(result.getRelativeAccount().getEmail()).isEqualTo("a@guy.com");
         assertThat(result.getUserAccount().getEmail()).isEqualTo("test@Mock.com");
     }
 
     @Test
     public void returnGoodNumberOfRelative() {
         //ARRANGE
-        List<RelationEmail> relationEmails = new ArrayList<>();
+        List<UserRelation> relationEmails = new ArrayList<>();
         relationEmails.add(relationEmail);
-        relationEmail = new RelationEmail();
-        relationEmail.setRelativeEmail("another@guy.com");
+        relationEmail = new UserRelation();
+        relationEmail.setRelativeAccount(userAccount);
         relationEmail.setId(40L);
         relationEmails.add(relationEmail);
-        relationEmail = new RelationEmail();
-        relationEmail.setRelativeEmail("yetanother@guy.com");
+        relationEmail = new UserRelation();
+        relationEmail.setRelativeAccount(userAccount);
         relationEmail.setId(50L);
         relationEmails.add(relationEmail);
         when(relativeEmailRepository.findByUserAccount(any())).thenReturn(relationEmails);

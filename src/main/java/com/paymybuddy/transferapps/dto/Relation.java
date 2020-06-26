@@ -1,18 +1,16 @@
 package com.paymybuddy.transferapps.dto;
 
+import com.paymybuddy.transferapps.config.ValidPassword;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
+
 
 @Getter
 @Setter
-public class SendMoney {
+public class Relation {
     @NotBlank
-    String target;
-    String description;
-    @Positive
-    @NotBlank
-    double amount;
+    String email;
 }

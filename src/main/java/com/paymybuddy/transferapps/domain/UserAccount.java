@@ -1,26 +1,22 @@
 package com.paymybuddy.transferapps.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "userAccount")
+@Table(name = "USERACCOUNT")
+@EqualsAndHashCode(of = "id")
 public class UserAccount implements Serializable {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -34,14 +30,11 @@ public class UserAccount implements Serializable {
     @Column(nullable = false)
     private String role;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "userAccount")
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "userAccount")
     private Set<BankAccount> bankAccounts;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "userAccount")
-    private Set<Transaction> transactions;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "userAccount")
-    private Set<RelationEmail> relationEmails;
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "userAccount")
+    private Set<UserRelation> relationEmails;
 
 
     public UserAccount(long id, String email, String name, Double moneyAmount, String role, String password) {

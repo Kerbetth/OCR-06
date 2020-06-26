@@ -43,7 +43,7 @@ public class DepositTestIT extends AbstractIT{
     @Test
     public void DepositMoneyWithSuccess() throws Exception {
         SendMoney sendMoney = new SendMoney();
-        sendMoney.setTarget("myAccount");
+        sendMoney.setTarget("myBank");
         sendMoney.setAmount(20);
         sendMoney.setDescription("a description");
         mvc.perform(post("/userHome/depositMoney/depositing")
@@ -65,7 +65,7 @@ public class DepositTestIT extends AbstractIT{
     @Test
     public void DepositMoney2timesWithSuccess() throws Exception {
         SendMoney sendMoney = new SendMoney();
-        sendMoney.setTarget("myAccount");
+        sendMoney.setTarget("myBank");
         mvc.perform(post("/userHome/depositMoney/depositing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("target",sendMoney.getTarget())
@@ -93,15 +93,14 @@ public class DepositTestIT extends AbstractIT{
     @Test
     public void DepositMoreMoneyThanItsOwnAndReturnError() throws Exception {
         SendMoney sendMoney = new SendMoney();
-        sendMoney.setTarget("myAccount");
+        sendMoney.setTarget("myBank");
         mvc.perform(post("/userHome/depositMoney/depositing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("target",sendMoney.getTarget())
                 .param("description",sendMoney.getDescription())
                 .param("amount", "200.00")
         )
-                .andExpect(status().isFound())
-                .andExpect(status().is3xxRedirection());
+                .andExpect(status().is4xxClientError());
 
         assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
