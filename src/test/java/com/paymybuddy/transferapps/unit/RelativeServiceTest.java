@@ -53,7 +53,6 @@ public class RelativeServiceTest {
         userAccount2.setName("John2");
         Optional<UserAccount> userAccountOptional = Optional.of(userAccount2);
         List<UserRelation> relatives = new ArrayList<>();
-        relatives.add(relationEmail);
         when(userAccountRepository.findByEmail(any())).thenReturn(userAccountOptional);
         when(relativeEmailRepository.findByUserAccount(any())).thenReturn(relatives);
         when(myAppUserDetailsService.currentUserAccount()).thenReturn(userAccount);
@@ -75,19 +74,18 @@ public class RelativeServiceTest {
     public void returnGoodNumberOfRelative() {
         //ARRANGE
         List<UserRelation> relationEmails = new ArrayList<>();
-        relationEmails.add(relationEmail);
         relationEmail = new UserRelation();
         relationEmail.setRelativeAccount(userAccount);
-        relationEmail.setId(40L);
+        relationEmail.setUserAccount(userAccount2);
         relationEmails.add(relationEmail);
         relationEmail = new UserRelation();
-        relationEmail.setRelativeAccount(userAccount);
-        relationEmail.setId(50L);
+        relationEmail.setUserAccount(userAccount);
+        relationEmail.setRelativeAccount(userAccount2);
         relationEmails.add(relationEmail);
         when(relativeEmailRepository.findByUserAccount(any())).thenReturn(relationEmails);
         //ACT
-        List<String> result =relativeService.getRelatives();
+        List<String> result = relativeService.getRelatives();
         //ASSERT
-        assertThat(result).hasSize(3);
+        assertThat(result).hasSize(2);
     }
 }

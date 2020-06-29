@@ -66,7 +66,7 @@ public class MoneyTransferService {
                     deposit.getDescription(),
                     deposit.getAmount(),
                     userAccount,
-                    userAccountRepository.findByEmail(deposit.getTarget()).get(),
+                    deposit.getTarget(),
                     Timestamp.from(Instant.now()),
                     0.0);
             transactionRepository.save(transaction);
@@ -92,7 +92,7 @@ public class MoneyTransferService {
                     deposit.getDescription(),
                     -deposit.getAmount(),
                     userAccount,
-                    userAccountRepository.findByEmail(deposit.getTarget()).get(),
+                    deposit.getTarget(),
                     Timestamp.from(Instant.now()),
                     0.0);
             transactionRepository.save(transaction);
@@ -133,7 +133,7 @@ public class MoneyTransferService {
                             sendMoney.getDescription(),
                             -amount / 100,
                             userAccount,
-                            userAccountRepository.findByEmail(sendMoney.getTarget()).get(),
+                            sendMoney.getTarget(),
                             Timestamp.from(Instant.now()),
                             -taxApps / 100);
                     transactionRepository.save(transaction);
@@ -142,7 +142,7 @@ public class MoneyTransferService {
                             sendMoney.getDescription(),
                             amount / 100,
                             userAccountRepository.findByEmail(sendMoney.getTarget()).get(),
-                            userAccount,
+                            userAccount.getEmail(),
                             Timestamp.from(Instant.now()),
                             0);
                     transactionRepository.save(transactionInverse);

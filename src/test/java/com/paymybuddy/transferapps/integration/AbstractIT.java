@@ -35,10 +35,5 @@ public abstract class AbstractIT {
     @Autowired
     protected TransactionRepository transactionRepository;
 
-    @AfterEach
-    void cleanup() {
-        applicationContext.getBeansOfType(CrudRepository.class)
-                .values()
-                .forEach(CrudRepository::deleteAll);
-    }
+
 }

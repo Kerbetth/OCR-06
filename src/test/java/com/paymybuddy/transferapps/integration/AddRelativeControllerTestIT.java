@@ -32,7 +32,7 @@ public class AddRelativeControllerTestIT extends AbstractIT{
     public void postNewFriendWithSuccess() throws Exception {
         mvc.perform(post("/userHome/friend/adding")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("relationEmail","friend2@test.com")
+                .param("email","friend2@test.com")
         )
         .andExpect(status().isFound())
         .andExpect(view().name("redirect:/userHome"));
@@ -44,7 +44,7 @@ public class AddRelativeControllerTestIT extends AbstractIT{
     public void post2NewFriendWithSuccess() throws Exception {
         mvc.perform(post("/userHome/friend/adding")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("relationEmail","friend2@test.com")
+                .param("email","friend2@test.com")
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
@@ -52,7 +52,7 @@ public class AddRelativeControllerTestIT extends AbstractIT{
 
         mvc.perform(post("/userHome/friend/adding")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("relationEmail","friend2@test.com")
+                .param("email","friend3@test.com")
         )
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/userHome"));
@@ -60,10 +60,6 @@ public class AddRelativeControllerTestIT extends AbstractIT{
         assertThat(relativeEmailRepository.findByUserAccountAndRelativeAccount(
                 userAccountRepository.findByEmail("test@test.com").get(),
                 userAccountRepository.findByEmail("friend2@test.com").get()))
-                .isPresent();
-        assertThat(relativeEmailRepository.findByUserAccountAndRelativeAccount(
-                userAccountRepository.findByEmail("friend2@test.com").get(),
-                userAccountRepository.findByEmail("test@test.com").get()))
                 .isPresent();
     }
 }

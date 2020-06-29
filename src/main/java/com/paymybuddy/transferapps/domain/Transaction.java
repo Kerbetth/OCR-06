@@ -30,21 +30,20 @@ public class Transaction implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "useraccount_id", referencedColumnName="id")
     private UserAccount userAccount;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "relativeaccount_id", referencedColumnName="id")
-    private UserAccount relativeAccount;
+    @Column(nullable = false)
+    private String target;
     @Column(nullable = false)
     private Timestamp date;
     @Column(nullable = false)
     private double perceiveAmountForApp;
 
 
-    public Transaction(Boolean isReceiving, String description, double amount, UserAccount userAccount, UserAccount relativeEmail, Timestamp date, double perceiveAmountForApp) {
+    public Transaction(Boolean isReceiving, String description, double amount, UserAccount userAccount, String target, Timestamp date, double perceiveAmountForApp) {
         this.isReceiving = isReceiving;
         this.description = description;
         this.amount = amount;
         this.userAccount = userAccount;
-        this.relativeAccount = relativeEmail;
+        this.target = target;
         this.date = date;
         this.perceiveAmountForApp = perceiveAmountForApp;
     }

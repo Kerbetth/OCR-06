@@ -33,16 +33,16 @@ public class RelativeService {
      * -addAFriend(relationEmail) links two userAccount in order to allow both to send money each other
      */
     public boolean addAFriend(String relationEmail) {
-        UserRelation relationObject = new UserRelation();
+        UserRelation userRelation = new UserRelation();
         if (!userAccountRepository.findByEmail(relationEmail).isEmpty()) {
-            relationObject.setRelativeAccount(userAccountRepository.findByEmail(relationEmail).get());
-            relationObject.setUserAccount(myAppUserDetailsService.currentUserAccount());
+            userRelation.setRelativeAccount(userAccountRepository.findByEmail(relationEmail).get());
+            userRelation.setUserAccount(myAppUserDetailsService.currentUserAccount());
             Optional<UserRelation> existingRelation =
                     relativeEmailRepository.findByUserAccountAndRelativeAccount(
                             myAppUserDetailsService.currentUserAccount(),
-                            relationObject.getRelativeAccount());
+                            userRelation.getRelativeAccount());
             if (existingRelation.isEmpty()) {
-                relativeEmailRepository.save(relationObject);
+                relativeEmailRepository.save(userRelation);
                 return true;
             } else {
                 throw new ResponseStatusException(HttpStatus.CONFLICT,

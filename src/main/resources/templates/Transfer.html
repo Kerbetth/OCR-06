@@ -54,7 +54,7 @@
                 <th>Date</th>
             </tr>
             <tr th:each="transaction : ${transactions}">
-                <td th:text="${transaction.relativeAccount}"></td>
+                <td th:text="${transaction.target}"></td>
                 <td th:text="${transaction.amount}"></td>
                 <td th:text="${transaction.perceiveAmountForApp}"></td>
                 <td th:text="${transaction.description}"></td>
