@@ -31,7 +31,7 @@ public class WithdrawTestIT extends AbstractIT{
     @Test
     public void withdrawMoneyWithSuccess() throws Exception {
         SendMoney withdraw = new SendMoney();
-        withdraw.setTarget("myAccount");
+        withdraw.setTarget("myBank");
         withdraw.setDescription("a description");
         mvc.perform(post("/userHome/withdrawMoney/withdrawing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -45,14 +45,14 @@ public class WithdrawTestIT extends AbstractIT{
         assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(transactionRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(2);
-        assertThat(transactionRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get()).get(0).getDescription()).isEqualTo(withdraw.getDescription());
+        assertThat(transactionRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get()).get(1).getDescription()).isEqualTo(withdraw.getDescription());
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(120);
     }
 
     @Test
     public void withdrawMoney2timesWithSuccess() throws Exception {
         SendMoney withdraw = new SendMoney();
-        withdraw.setTarget("myAccount");
+        withdraw.setTarget("myBank");
         mvc.perform(post("/userHome/withdrawMoney/withdrawing")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("target",withdraw.getTarget())
@@ -87,8 +87,7 @@ public class WithdrawTestIT extends AbstractIT{
                 .param("description",withdraw.getDescription())
                 .param("amount", "11000.00")
         )
-                .andExpect(status().isFound())
-                .andExpect(status().is3xxRedirection());
+                .andExpect(status().is4xxClientError());
 
         assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();

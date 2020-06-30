@@ -1,17 +1,14 @@
 package com.paymybuddy.transferapps.unit.controller;
 
 import com.paymybuddy.transferapps.controllers.AddfriendControllers;
-import com.paymybuddy.transferapps.domain.RelationEmail;
+import com.paymybuddy.transferapps.domain.UserRelation;
+import com.paymybuddy.transferapps.dto.Relation;
 import com.paymybuddy.transferapps.service.RelativeService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.Model;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.sql.Timestamp;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,10 +38,9 @@ public class AddFriendControllerTest {
     @Test
     public void postNewFriendWithSuccess() {
         when(relativeService.addAFriend(any())).thenReturn(true);
-
-        RelationEmail relationEmail = new RelationEmail();
-        relationEmail.setRelativeEmail("friend@test.com");
-        String result = addfriendControllers.addingAFriend(relationEmail);
+        Relation relation = new Relation();
+        relation.setEmail("friend@test.com");
+        String result = addfriendControllers.addingAFriend(relation);
 
         assertThat(result).isEqualTo("redirect:/userHome");
     }

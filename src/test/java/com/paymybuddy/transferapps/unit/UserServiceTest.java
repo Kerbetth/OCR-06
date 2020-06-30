@@ -5,25 +5,22 @@ import com.mysql.cj.log.Slf4JLogger;
 import com.paymybuddy.transferapps.domain.UserAccount;
 import com.paymybuddy.transferapps.dto.CreateAccount;
 import com.paymybuddy.transferapps.repositories.UserAccountRepository;
-import com.paymybuddy.transferapps.service.ConnectionService;
-import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
+import com.paymybuddy.transferapps.service.UserService;
+import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.sql.Timestamp;
-import java.time.Instant;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-public class ConnectionServiceTest {
+public class UserServiceTest {
 
 
 
@@ -38,7 +35,7 @@ public class ConnectionServiceTest {
     private ArgumentCaptor<UserAccount> acUserAccount;
 
     @InjectMocks
-    ConnectionService connectionService = new ConnectionService();
+    UserService userService = new UserService();
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -57,7 +54,7 @@ public class ConnectionServiceTest {
     @Test
     public void returnGoodUserAccountAfterEnterGoodLogs() {
         //ACT
-        connectionService.createAnAccount(createAccount);
+        userService.createAnAccount(createAccount);
         //ASSERT
         verify(userAccountRepository).save(acUserAccount.capture());
         assertThat(encoder.matches("pass", acUserAccount.getValue().getPassword())).isTrue();
@@ -68,7 +65,7 @@ public class ConnectionServiceTest {
     public void returnErrorAfterEnterBadLogs() {
         createAccount.setConfirmPassword("fauxPass");
         //ACT
-        connectionService.createAnAccount(createAccount);
+        assertThrows(ResponseStatusException.class, () -> userService.createAnAccount(createAccount));
         //ASSERT
         verify(userAccountRepository, times(0)).save(any());
     }

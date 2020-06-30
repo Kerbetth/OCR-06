@@ -9,21 +9,16 @@ import com.paymybuddy.transferapps.repositories.TransactionRepository;
 import com.paymybuddy.transferapps.repositories.UserAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.web.header.Header;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Random;
-
-
-/**
- * -addABankAccount(BankAccount) link a bankAccount IBAN to the userAccount in order to withdrawing and depositing money
- * -withDrawMoneyFromBankAndAddOnTheAccount(Deposit) withdraw money from a bank account to the userAccount
- * -depositMoneyToBankAccount(Deposit) deposit money from userAccount to a bank account
- * -sendMoneyToARelative(SendMoney) send money from the current User account to a relative of the User with 5% tax
- */
-
 
 @Service
 @Slf4j
@@ -38,6 +33,9 @@ public class MoneyTransferService {
     @Autowired
     private MyAppUserDetailsService myAppUserDetailsService;
 
+    /**
+     * -addABankAccount(BankAccount) link a bankAccount IBAN to the userAccount in order to withdrawing and depositing money
+     */
     public boolean addABankAccount(BankAccount bankAccount) {
         // TODO: create a service in order to verify the IBAN
         if (bankAccountRepository.findByAccountIban(bankAccount.getAccountIban()).isEmpty()) {
@@ -45,11 +43,14 @@ public class MoneyTransferService {
             bankAccountRepository.save(bankAccount);
             return true;
         } else {
-            log.error("This IBAN has already been added");
-            return false;
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "This IBAN has already been added");
         }
     }
 
+    /**
+     * -withDrawMoneyFromBankAndAddOnTheAccount(Deposit) withdraw money from a bank account to the userAccount
+     */
     public boolean withDrawMoneyFromBankAndAddOnTheAccount(SendMoney deposit) {
         //TODO: make contact with the bank to have permission to withdraw
         UserAccount userAccount = myAppUserDetailsService.currentUserAccount();
@@ -57,7 +58,6 @@ public class MoneyTransferService {
             userAccount.setMoneyAmount(userAccount.getMoneyAmount() + deposit.getAmount());
             userAccountRepository.save(userAccount);
             Transaction transaction = new Transaction(
-                    new Random().nextLong(),
                     false,
                     deposit.getDescription(),
                     deposit.getAmount(),
@@ -68,11 +68,15 @@ public class MoneyTransferService {
             transactionRepository.save(transaction);
             return true;
         } else {
-            log.error("You have too much money on your account");
-            return false;
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "You have too much money on your account");
         }
     }
 
+    /**
+     * -depositMoneyToBankAccount(Deposit) deposit money from userAccount to a bank account
+     *
+     */
     public boolean depositMoneyToBankAccount(SendMoney deposit) {
         UserAccount userAccount = myAppUserDetailsService.currentUserAccount();
         if (userAccount.getMoneyAmount() > deposit.getAmount()) {
@@ -80,7 +84,6 @@ public class MoneyTransferService {
             userAccountRepository.save(userAccount);
             //TODO: make contact with the bank in order to complete the transaction
             Transaction transaction = new Transaction(
-                    new Random().nextLong(),
                     true,
                     deposit.getDescription(),
                     -deposit.getAmount(),
@@ -91,13 +94,19 @@ public class MoneyTransferService {
             transactionRepository.save(transaction);
             return true;
         } else {
-            log.error("Not enough money on your account");
-            return false;
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "not enough money on the account");
         }
     }
-
+    /** -sendMoneyToARelative(SendMoney) send money from the current User account to a relative of the User with 5% tax
+     * the amount is converted into cents, in order to get integer numbers and manipulate them with more safety
+     * although the amount stock in DB is registered in dollar
+     *
+     */
     public boolean sendMoneyToARelative(SendMoney sendMoney) {
         UserAccount userAccount = myAppUserDetailsService.currentUserAccount();
+
         double amount = Math.ceil(95 * sendMoney.getAmount());
         double taxApps = Math.floor(5 * sendMoney.getAmount());
         //debit the account of the sender
@@ -116,7 +125,6 @@ public class MoneyTransferService {
                     userAccountRepository.save(userAccount);
                     //recording the transaction
                     Transaction transaction = new Transaction(
-                            new Random().nextLong(),
                             true,
                             sendMoney.getDescription(),
                             -amount / 100,
@@ -126,7 +134,6 @@ public class MoneyTransferService {
                             -taxApps / 100);
                     transactionRepository.save(transaction);
                     Transaction transactionInverse = new Transaction(
-                            new Random().nextLong(),
                             false,
                             sendMoney.getDescription(),
                             amount / 100,
@@ -137,16 +144,16 @@ public class MoneyTransferService {
                     transactionRepository.save(transactionInverse);
                     return true;
                 } else {
-                    log.error("The relative have too much money on his account");
-                    return false;
+                    throw new ResponseStatusException(HttpStatus.CONFLICT,
+                            "The relative have too much money on his account");
                 }
             } else {
-                log.error("This email is not recorded in our database");
-                return false;
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "This email is not recorded in our database");
             }
         } else {
-            log.error("Not enough money on your account");
-            return false;
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "not enough money on the account");
         }
     }
 

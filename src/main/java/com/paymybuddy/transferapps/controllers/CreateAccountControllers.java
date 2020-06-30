@@ -2,10 +2,8 @@ package com.paymybuddy.transferapps.controllers;
 
 
 import com.paymybuddy.transferapps.dto.CreateAccount;
-import com.paymybuddy.transferapps.service.ConnectionService;
+import com.paymybuddy.transferapps.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,7 +19,7 @@ import javax.validation.Valid;
 public class CreateAccountControllers {
 
     @Autowired
-    private ConnectionService connectionService;
+    private UserService userService;
 
     @GetMapping(value = "/account/create")
     public String createAccount(Model model) {
@@ -32,7 +30,7 @@ public class CreateAccountControllers {
     @PostMapping(value = "/account/creating")
     public String creatingAccount(@Valid CreateAccount createAccount, BindingResult result) {
         if (!result.hasErrors()) {
-            connectionService.createAnAccount(createAccount);
+            userService.createAnAccount(createAccount);
             return "redirect:/";
         }
         return "redirect:/account/create";

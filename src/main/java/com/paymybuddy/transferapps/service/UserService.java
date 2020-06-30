@@ -5,25 +5,27 @@ import com.paymybuddy.transferapps.dto.CreateAccount;
 import com.paymybuddy.transferapps.repositories.UserAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Random;
 
-/**
- * createAccount() method create a new user account with encrypted password and save it in database
- * getAccountInfo() method retrieve name and email from the user
- */
+
 
 @Service
 @Slf4j
-public class ConnectionService {
+public class UserService {
 
     @Autowired
     protected UserAccountRepository userAccountRepository;
     @Autowired
     private MyAppUserDetailsService myAppUserDetailsService;
 
+    /**
+     * createAccount() method create a new user account with encrypted password and save it in database
+     */
     public void createAnAccount(CreateAccount createAccount) {
         if (createAccount.getPassword().equals(createAccount.getConfirmPassword())) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
@@ -35,10 +37,14 @@ public class ConnectionService {
                     encoder.encode(createAccount.getPassword()
                     )));
         } else {
-            log.error("The two entries for the password don't match each other");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "The two entries for the password don't match each other");
         }
     }
 
+    /**
+     * getAccountInfo() method retrieve name and email from the user
+     */
     public UserAccount getAccountInfo() {
         return userAccountRepository.findByEmail(
                 myAppUserDetailsService.currentUserAccount().getEmail()).get();

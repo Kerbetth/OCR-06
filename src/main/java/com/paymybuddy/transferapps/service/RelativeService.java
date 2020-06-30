@@ -1,12 +1,16 @@
 package com.paymybuddy.transferapps.service;
 
 
-import com.paymybuddy.transferapps.domain.RelationEmail;
+import com.paymybuddy.transferapps.domain.UserRelation;
 import com.paymybuddy.transferapps.repositories.RelativeEmailRepository;
 import com.paymybuddy.transferapps.repositories.UserAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +20,7 @@ import java.util.Optional;
 @Slf4j
 public class RelativeService {
 
-    /**
-     * -addAFriend(relationEmail) links two userAccount in order to allow both to send money each other
-     * -getRelatives() git a list of emails corresponding to all UserAccount linked to the current UserAccount
-     */
+
 
     @Autowired
     private RelativeEmailRepository relativeEmailRepository;
@@ -28,31 +29,38 @@ public class RelativeService {
     @Autowired
     private MyAppUserDetailsService myAppUserDetailsService;
 
-
-    public boolean addAFriend(RelationEmail relationEmail) {
-        if (!userAccountRepository.findByEmail(relationEmail.getRelativeEmail()).isEmpty()) {
-            relationEmail.setUserAccount(myAppUserDetailsService.currentUserAccount());
-            Optional<RelationEmail> existingRelation =
-                    relativeEmailRepository.findByUserAccountAndRelativeEmail(
+    /**
+     * -addAFriend(relationEmail) links two userAccount in order to allow both to send money each other
+     */
+    public boolean addAFriend(String relationEmail) {
+        UserRelation userRelation = new UserRelation();
+        if (!userAccountRepository.findByEmail(relationEmail).isEmpty()) {
+            userRelation.setRelativeAccount(userAccountRepository.findByEmail(relationEmail).get());
+            userRelation.setUserAccount(myAppUserDetailsService.currentUserAccount());
+            Optional<UserRelation> existingRelation =
+                    relativeEmailRepository.findByUserAccountAndRelativeAccount(
                             myAppUserDetailsService.currentUserAccount(),
-                            relationEmail.getRelativeEmail());
+                            userRelation.getRelativeAccount());
             if (existingRelation.isEmpty()) {
-                relativeEmailRepository.save(relationEmail);
+                relativeEmailRepository.save(userRelation);
                 return true;
             } else {
-                log.error("The email is already added to your friendlist");
-                return false;
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "The email is already added to your friendlist");
             }
         } else {
-            log.error("The email "+relationEmail.getRelativeEmail()+" is not recorded in the database");
-            return false;
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                    "The email "+relationEmail+" is not recorded in the database");
         }
     }
 
+    /**
+     * -getRelatives() git a list of emails corresponding to all UserAccount linked to the current UserAccount
+     */
     public List<String> getRelatives() {
         List<String> relativeList = new ArrayList<>();
-        for (RelationEmail relative : relativeEmailRepository.findByUserAccount(myAppUserDetailsService.currentUserAccount())) {
-            relativeList.add(relative.getRelativeEmail());
+        for (UserRelation relative : relativeEmailRepository.findByUserAccount(myAppUserDetailsService.currentUserAccount())) {
+            relativeList.add(relative.getRelativeAccount().getEmail());
         }
         return relativeList;
     }
