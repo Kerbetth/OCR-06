@@ -1,15 +1,12 @@
 package com.paymybuddy.transferapps.unit.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.paymybuddy.transferapps.controllers.CreateAccountControllers;
-import com.paymybuddy.transferapps.domain.BankAccount;
 import com.paymybuddy.transferapps.dto.CreateAccount;
-import com.paymybuddy.transferapps.service.ConnectionService;
-import com.paymybuddy.transferapps.service.MoneyTransferService;
+import com.paymybuddy.transferapps.service.UserService;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +21,7 @@ import org.springframework.validation.BindingResult;
 public class CreateAccountControllerTest {
 
     @Mock
-    private ConnectionService connectionService;
+    private UserService userService;
     @Mock
     private Model model;
     @Mock

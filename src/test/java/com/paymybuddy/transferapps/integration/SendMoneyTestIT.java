@@ -67,8 +67,7 @@ public class SendMoneyTestIT extends AbstractIT{
                 .requestAttr("deposit", sendMoney)
                 .contentType(MediaType.APPLICATION_XHTML_XML)
         )
-                .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/userHome/transfer"));
+                .andExpect(status().is4xxClientError());
         assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(100);
@@ -87,8 +86,7 @@ public class SendMoneyTestIT extends AbstractIT{
                 .requestAttr("deposit", sendMoney)
                 .contentType(MediaType.APPLICATION_XHTML_XML)
         )
-                .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/userHome/transfer"));
+                .andExpect(status().is4xxClientError());
         assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(100);
@@ -108,8 +106,7 @@ public class SendMoneyTestIT extends AbstractIT{
                 .requestAttr("deposit", sendMoney)
                 .contentType(MediaType.APPLICATION_XHTML_XML)
         )
-                .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/userHome/transfer"));
+                .andExpect(status().is4xxClientError());
         assertThat(bankAccountRepository.findByUserAccount(userAccountRepository.findByEmail("test@test.com").get())).hasSize(1);
         assertThat(bankAccountRepository.findByAccountIban("5555")).isPresent();
         assertThat(userAccountRepository.findByEmail("test@test.com").get().getMoneyAmount()).isEqualTo(100);

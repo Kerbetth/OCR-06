@@ -16,16 +16,14 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Optional;
 
-/**
- * MyAppUserDetailsService methods are use to keep authitfication of the user during his navigation in the website
- */
-
 @Service
 public class MyAppUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UserAccountRepository userAccountRepository;
-
+    /**
+     * MyAppUserDetailsService methods are use to keep authitfication of the user during his navigation in the website
+     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserAccount user = userAccountRepository.findByEmail(email).get();

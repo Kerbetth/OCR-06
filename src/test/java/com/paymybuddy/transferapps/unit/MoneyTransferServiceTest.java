@@ -18,6 +18,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -88,7 +89,9 @@ public class MoneyTransferServiceTest {
         userAccount.setMoneyAmount(10);
         when(userAccountRepository.findByEmail(any())).thenReturn(java.util.Optional.ofNullable(userAccount));
         //ACT
-        moneyTransferService.depositMoneyToBankAccount(sendMoney2);
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            moneyTransferService.depositMoneyToBankAccount(sendMoney2);
+        });
         //ASSERT
         verify(userAccountRepository, times(0)).save(any());
         verify(transactionRepository, times(0)).save(any());
@@ -138,9 +141,11 @@ public class MoneyTransferServiceTest {
         relativeUserAccount.setMoneyAmount(0);
         when(userAccountRepository.findByEmail(any()))
                 .thenReturn(java.util.Optional.ofNullable(userAccount));
-        //ACT
         sendMoney.setAmount(110);
-        moneyTransferService.sendMoneyToARelative(sendMoney);
+        //ACT
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            moneyTransferService.sendMoneyToARelative(sendMoney);
+        });
         //ASSERT
         assertThat(userAccount.getMoneyAmount()).isEqualTo(100);
     }
@@ -175,9 +180,13 @@ public class MoneyTransferServiceTest {
                 .thenReturn(java.util.Optional.ofNullable(userAccount))
                 .thenReturn(java.util.Optional.of(relativeUserAccount))
                 .thenReturn(java.util.Optional.of(relativeUserAccount));
-        //ACT
         sendMoney.setAmount(110);
-        moneyTransferService.sendMoneyToARelative(sendMoney);
+        //ACT
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            moneyTransferService.sendMoneyToARelative(sendMoney);
+        });
+
+
         //ASSERT
         assertThat(userAccount.getMoneyAmount()).isEqualTo(100);
     }
