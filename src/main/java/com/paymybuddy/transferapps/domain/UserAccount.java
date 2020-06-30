@@ -19,15 +19,15 @@ public class UserAccount implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 40)
     private String email;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String name;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition="Decimal(6,2)")
     private double moneyAmount;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String password;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private String role;
 
     @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "userAccount")
