@@ -7,6 +7,9 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * Relation is a simple DTO which store the email write by the user during the "add friend" form
+ */
 
 @Getter
 @Setter
