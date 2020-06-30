@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Getter
@@ -20,12 +21,13 @@ public class BankAccount implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 50)
     private String accountIban;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     private String accountName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "useraccount_id", referencedColumnName="id")
+    @NotNull
     private UserAccount userAccount;
 
 }
